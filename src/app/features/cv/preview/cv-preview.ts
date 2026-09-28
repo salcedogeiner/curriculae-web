@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
-import { I18n } from '../../core/i18n/i18n';
+import { I18n } from '../../../core/i18n/i18n';
 
 /**
  * Read-only preview of the text extracted from the base CV.

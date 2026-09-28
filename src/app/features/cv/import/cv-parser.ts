@@ -1,4 +1,4 @@
-import { detectCvFormat, isLegacyWordFile, type CvFormat } from './cv-file';
+import { detectCvFormat, isLegacyWordFile, type CvFormat } from '../cv-file';
 
 /**
  * Base-CV text extraction.

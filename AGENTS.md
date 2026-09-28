@@ -98,13 +98,16 @@ src/
       i18n/                  messages.ts (Spanish catalogue) + i18n.ts + its spec
       storage/               cv.repository.ts — versioned localStorage
     features/
-      cv/                    step 1: home page, drop zone, import + parsing
-        cv-home.*            home page (the empty right column is the next step)
-        cv-dropzone.*        drag & drop, built on a real <input type="file">
-        cv-preview.*         read-only preview of the extracted text
-        cv-import.service.ts validate → parse → normalise → persist, as signals
-        cv-parser.ts         lazy pdfjs-dist / mammoth extraction
-        cv-file.ts           accepted formats, validation, size limit
+      cv/                    step 1, one folder per piece of the flow
+        cv-file.ts           accepted formats, validation, size limit; shared
+        home/                cv-home.* — the page (the empty right column is
+                             the next step)
+        dropzone/            cv-dropzone.* — drag & drop, built on a real
+                             <input type="file">
+        preview/             cv-preview.* — read-only preview of the text
+        import/              cv-import.service.* — validate → parse → normalise
+                             → persist, as signals
+                             cv-parser.* — lazy pdfjs-dist / mammoth extraction
 angular.json  package.json  tsconfig*.json  .prettierrc  .editorconfig
 .vscode/                     launch, tasks, extensions
 ```

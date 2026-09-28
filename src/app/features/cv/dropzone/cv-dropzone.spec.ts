@@ -1,8 +1,8 @@
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { CvDropzone } from './cv-dropzone';
-import { CvImportService } from './cv-import.service';
-import { CV_ACCEPT_ATTRIBUTE } from './cv-file';
+import { CvImportService } from '../import/cv-import.service';
+import { CV_ACCEPT_ATTRIBUTE } from '../cv-file';
 
 describe('CvDropzone', () => {
   beforeEach(async () => {

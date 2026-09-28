@@ -8,9 +8,9 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { I18n } from '../../core/i18n/i18n';
-import { CV_ACCEPT_ATTRIBUTE, formatLabel, formatListLabel, humanFileSize } from './cv-file';
-import { CvImportService, describeProgress } from './cv-import.service';
+import { I18n } from '../../../core/i18n/i18n';
+import { CV_ACCEPT_ATTRIBUTE, formatLabel, formatListLabel, humanFileSize } from '../cv-file';
+import { CvImportService, describeProgress } from '../import/cv-import.service';
 
 let nextId = 0;
 

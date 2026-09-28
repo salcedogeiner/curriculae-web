@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { hasReadableContent, normaliseCvText } from '../../features/cv/cv-parser';
+import { hasReadableContent, normaliseCvText } from '../../features/cv/import/cv-parser';
 import type { CvFormat } from '../../features/cv/cv-file';
 
 /**

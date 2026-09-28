@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { CvImportService, describeProgress } from './cv-import.service';
-import { CvRepository } from '../../core/storage/cv.repository';
+import { CvRepository } from '../../../core/storage/cv.repository';
 
 describe('CvImportService', () => {
   let service: CvImportService;

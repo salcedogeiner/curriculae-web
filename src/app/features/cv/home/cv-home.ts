@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { I18n } from '../../core/i18n/i18n';
-import { CvImportService } from './cv-import.service';
-import { CvDropzone } from './cv-dropzone';
-import { CvPreview } from './cv-preview';
+import { I18n } from '../../../core/i18n/i18n';
+import { CvImportService } from '../import/cv-import.service';
+import { CvDropzone } from '../dropzone/cv-dropzone';
+import { CvPreview } from '../preview/cv-preview';
 
 /**
  * Home / step 1: load the base CV.

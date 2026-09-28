@@ -1,7 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { CvRepository, createStoredCv, type StoredCv } from '../../core/storage/cv.repository';
-import type { MessageKey } from '../../core/i18n/messages';
-import { MAX_FILE_BYTES, humanFileSize } from './cv-file';
+import { CvRepository, createStoredCv, type StoredCv } from '../../../core/storage/cv.repository';
+import type { MessageKey } from '../../../core/i18n/messages';
+import { MAX_FILE_BYTES, humanFileSize } from '../cv-file';
 import { CvParseError, parseCvFile, type CvParseErrorCode } from './cv-parser';
 
 export type CvImportStatus = 'idle' | 'reading' | 'ready' | 'error';
