@@ -8,7 +8,8 @@ produce an adapted CV that can be exported to PDF, DOCX or Markdown.
 
 **Everything runs on the user's machine.** There is no backend, no account, no
 telemetry and no API key. The résumé never leaves the device unless the user
-explicitly opts into a cloud-backed agent engine (see §5).
+explicitly opts into a cloud-backed agent engine (see §5 and the `llm-integration`
+skill).
 
 Stack: **Angular 22.2** (standalone, zoneless, signals) + TypeScript + plain CSS +
 Vitest. UI copy is **Spanish**; identifiers, comments and commits are **English**.
@@ -43,37 +44,47 @@ npm run watch                # dev build, --watch
 
 ## 1. Golden rules (non-negotiable)
 
-1. **Never let résumé data leave the machine implicitly.** Every call to a model
+1. **Never commit without the user's review.** Leave every change in the working
+   tree, uncommitted, and say what changed. The user reviews and decides when to
+   commit. Do not run `git commit`, do not `git add` on the user's behalf beyond what
+   is needed to show a diff, and never amend, rebase, reset, push, or rewrite history
+   unless explicitly asked in that same request. "Implement X" is not permission to
+   commit; only "commit" is.
+2. **Never let résumé data leave the machine implicitly.** Every call to a model
    goes through the `LlmService` facade and is tagged `local` or `agent`. A `local`
    engine (Ollama, llama.cpp) is the default and works offline. An `agent` engine
    (Claude, opencode, Codex) may forward the CV to a cloud provider and therefore
    requires an explicit, remembered, revocable opt-in plus a visible badge in the UI.
    A feature may never call a provider SDK directly and skip this gate.
-2. **The quality gate ships with the change.** A change that breaks the build or the
+3. **The quality gate ships with the change.** A change that breaks the build or the
    tests is unfinished.
-3. **All user-facing strings are Spanish**, including validation messages, empty
-   states, `aria-label`s and error text. Keep them behind the i18n layer (§6) rather
+4. **All user-facing strings are Spanish**, including validation messages, empty
+   states, `aria-label`s and error text. Keep them behind the i18n layer (§7) rather
    than hardcoding them in templates, so a second language is a config change.
-4. **Zero new runtime dependencies without approval.** The declared purpose of each
-   dependency is listed in §8. Ask before adding another; the résumé app should stay
+5. **Zero new runtime dependencies without approval.** The declared purpose of each
+   dependency is listed in §9. Ask before adding another; the résumé app should stay
    small and fast to start.
-5. **Never commit secrets, `.env*` files or local model artefacts.** The app has no
+6. **Never commit secrets, `.env*` files or local model artefacts.** The app has no
    secrets by design — it talks to `127.0.0.1`. If a cloud engine is ever configured,
    its credential belongs in the user's own tool config, never in this repo.
-6. **Persistence is `localStorage`, scoped and versioned.** The stored résumé and
+7. **Persistence is `localStorage`, scoped and versioned.** The stored résumé and
    preferences live under a single namespaced, schema-versioned key so a future
    migration is possible. Never cache full CV text in `sessionStorage` or in a
    module-level constant.
-7. **Do not delete or rewrite files outside the scope of the task.** Check
+8. **Do not delete or rewrite files outside the scope of the task.** Check
    `git log` before removing anything; it may be someone's in-progress work.
+9. **Load the relevant skill instead of improvising.** The detailed procedures live
+   in `.agents/skills/` (§6). This file is the mental model; the skills are the
+   playbooks.
 
 ---
 
 ## 2. Repository map (current state)
 
 ```
-AGENTS.md                    ← this file
-.agents/skills/              ← reserved for portable skills (<id>/SKILL.md)
+AGENTS.md                    ← this file: the mental model and the rules
+.agents/skills/              ← portable playbooks (<id>/SKILL.md, optional
+│                                references/). Load the relevant one, §6.
 src/
   main.ts                    bootstrapApplication(App, appConfig)
   index.html                 <app-root>, lang="es" TODO
@@ -133,43 +144,54 @@ touches a feature.
    user never supplied. That is a hard product rule, not a style preference.
 5. **Export** — PDF, DOCX, Markdown, or copy to clipboard.
 
----
-
-## 5. Model engines: what actually exists locally
-
-Verified on the dev machine on 2026-09-28. Do not assume these stay available —
-always probe, never hardcode a port.
-
-### Tier `local` — the résumé stays on the device (default)
-
-| Engine                    | Endpoint                 | Notes                                                                                                                                                                                                                                                                     |
-| ------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Ollama**                | `http://127.0.0.1:11434` | Running. `GET /` → `Ollama is running`; `GET /api/tags` → native list; `GET /v1/models` → OpenAI-compatible list. Installed model: `qwen3.5:latest` (9.7 B, Q4_K_M, 262 144 ctx, `tools` + `vision`). Prefer the native `/api/chat`; fall back to `/v1/chat/completions`. |
-| **llama.cpp / llamafile** | `http://127.0.0.1:8080`  | `llama-server` and `llamafile` speak the OpenAI API. Not installed on the dev machine.                                                                                                                                                                                    |
-
-### Tier `agent` — may forward the CV to a cloud provider (opt-in required)
-
-| Tool         | Integration                                                                                                                                                     | Reality                                                                                                                                                                                                                             |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **opencode** | background service, `opencode service status` → `http://127.0.0.1:<port>`, API under `/api/*`, OpenAPI at `/openapi.json`. Also `opencode serve --port --cors`. | **The port is dynamic** (observed `:49374`, v2.0.16) — probe, never assume 4096. Whether the CV stays local depends entirely on the model/provider opencode is configured with.                                                     |
-| **Claude**   | `claude -p "<prompt>" --output-format json` (headless).                                                                                                         | **Cloud: Anthropic.** Requires `/login`; without it the call fails with `Not logged in · Please run /login`. Spinning up a subprocess from the browser is not possible — this engine needs a bridge, so treat it as a stretch goal. |
-| **Codex**    | —                                                                                                                                                               | Not installed on the dev machine. Verify the real local interface before writing an adapter.                                                                                                                                        |
-
-**Detection**: probe a short list of known bases (`11434`, `8080`, `1234`, plus the
-opencode service URL) in parallel with a ~1 s timeout and an `AbortController`; merge
-with the user's saved preference. A probe failure is a normal, silent outcome — the
-app must degrade to "no engine found" with a helpful message, never a crash or a
-spinner that never resolves.
-
-**CORS is the #1 local-mode bug.** The app is served from `http://localhost:4200`
-and calls other origins, so the model server must allow it: Ollama needs
-`OLLAMA_ORIGINS='*'`, `opencode serve` needs `--cors http://localhost:4200`, and
-llama.cpp needs its host/origin flags. Document this in the UI as a setup hint the
-first time a probe fails — it is invisible otherwise.
+→ **Load the `cv-pipeline` skill** to build or change any of these steps. It holds the
+JSON contract for the analysis, the prompting rules for small local models, the
+import/export specifics per format, and how the no-invented-facts rule is enforced in
+the prompt _and_ in validation.
 
 ---
 
-## 6. Conventions
+## 5. Model engines
+
+Two tiers, and the difference is a privacy promise, not an implementation detail:
+
+| Tier    | Engines                 | Promise                                                                     |
+| ------- | ----------------------- | --------------------------------------------------------------------------- |
+| `local` | Ollama, llama.cpp       | The résumé never leaves the device. Default, works offline.                 |
+| `agent` | Claude, opencode, Codex | May forward the CV to a cloud provider. Explicit opt-in, revocable, badged. |
+
+- **Ollama** is running on this machine at `http://127.0.0.1:11434` with
+  `qwen3.5:latest` (9.7 B, thinking model). **opencode** exposes a service on a
+  **dynamic** port — probe, never hardcode. **Claude** requires a subprocess bridge
+  (stretch goal) and is a cloud engine. **Codex** is not installed; verify its real
+  interface before writing an adapter.
+- Detection probes known bases in parallel with a short timeout and an
+  `AbortController`. A failed probe is silent and non-fatal: degrade to "no engine
+  found" with a setup hint, never a crash or a permanent spinner.
+- **CORS is the #1 local-mode bug** and it is invisible in the UI: the app on
+  `localhost:4200` needs `OLLAMA_ORIGINS` on Ollama and `--cors` on `opencode serve`.
+
+→ **Load the `llm-integration` skill** before touching `core/llm`. It holds the
+verified endpoint table, the adapter contract, streaming/abort rules, JSON discipline
+and the CORS fix commands.
+
+---
+
+## 6. Skills
+
+Procedures live in `.agents/skills/<id>/SKILL.md` and are loaded on demand. Load the
+relevant one instead of improvising the workflow.
+
+| Skill             | Load it when                                                                                                                                                                                   |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `styling`         | Writing or reviewing any CSS, design tokens, dark mode, the CV print stylesheet, or when the build warns about `anyComponentStyle`. Includes `references/tokens.md` — the AA-verified palette. |
+| `llm-integration` | Anything in `core/llm`: adding an engine, "no engine found", a hung or malformed model call, CORS.                                                                                             |
+| `cv-pipeline`     | The analyse → adapt → export flow, prompts, JSON contracts, CV import/export, or when the model invents something.                                                                             |
+| `a11y-audit`      | Accessibility work, a WCAG pass, or before shipping any UI change. Includes `references/checklist.md`.                                                                                         |
+
+---
+
+## 7. Conventions
 
 ### Angular 22
 
@@ -185,15 +207,18 @@ first time a probe fails — it is invisible otherwise.
 
 ### Styling (plain CSS)
 
-- Global design tokens live in `src/styles.css` as custom properties
-  (`--color-surface`, `--color-text-muted`, `--color-accent`, spacing, radii).
+- Global design tokens live in `src/styles.css` as custom properties.
   **Consume tokens, never raw hex or a one-off colour.**
-- Component styles are `app.css`-style per-component files with Angular's emulated
-  encapsulation; no `::ng-deep`, no global selectors from a component.
-- The CV preview must print cleanly: a dedicated `@media print` stylesheet, white
-  background, no fixed heights, and page-break control inside work items.
-- Accessible by default: visible focus ring, real `<label for>`, `aria-live` for
-  async results, `prefers-reduced-motion` respected.
+- Per-component stylesheets with Angular's emulated encapsulation; no `::ng-deep`, no
+  global selectors leaking from a component.
+- The CV preview must print cleanly — a dedicated `@media print` stylesheet, white
+  background, no fixed heights, page-break control inside work items.
+- Accessible by default: visible focus ring, real `<label for>`, `aria-live` for async
+  results, `prefers-reduced-motion` respected.
+
+→ **Load the `styling` skill** before writing or reviewing CSS. It holds the contract,
+the recommended token set (`references/tokens.md`, AA-verified), the dark-mode pattern
+and the print stylesheet.
 
 ### Testing
 
@@ -202,7 +227,7 @@ first time a probe fails — it is invisible otherwise.
 - Adapters are the easiest and most valuable thing to test: assert the probe against a
   mocked `fetch`, the JSON validation against malformed model output, and the
   no-invented-facts rule with a fixture.
-- If behaviour changes, the tests change in the same commit. The tests are the
+- If behaviour changes, the tests change in the same change. The tests are the
   executable form of §1.
 
 ### i18n
@@ -213,13 +238,14 @@ addition. `lang="es"` in `index.html`.
 
 ### Git
 
+- **Leave changes uncommitted for review (§1.1).** The user decides when to commit.
 - Conventional Commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `test:`.
 - One logical change per commit; a partial commit is better named `WIP` than faked.
 - Branch `main`; repo-local identity `salcedogeiner <geiner.salcedo.ppc0111@gmail.com>`.
 
 ---
 
-## 7. Gotchas specific to this codebase
+## 8. Gotchas specific to this codebase
 
 - The app **runs locally and is not deployed**; `ng serve` over plain HTTP is the
   target environment. Do not add SSR, a service worker, or telemetry "for later".
@@ -240,10 +266,10 @@ addition. `lang="es"` in `index.html`.
 
 ---
 
-## 8. Approved dependencies
+## 9. Approved dependencies
 
 Runtime dependencies beyond the Angular baseline (`@angular/*`, `rxjs`, `tslib`).
-Anything not on this list needs approval first (§1.4).
+Anything not on this list needs approval first (§1.5).
 
 | Package      | Purpose                                          |
 | ------------ | ------------------------------------------------ |
