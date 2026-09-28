@@ -15,7 +15,6 @@
   gap: var(--space-3);
   flex: 1;
   /* min-height, never height: a tall hint must not clip (styling skill). */
-  min-height: var(--dropzone-min-height);
   padding: var(--space-5);
   background: var(--color-surface);
   border: 2px dashed var(--color-border-strong);

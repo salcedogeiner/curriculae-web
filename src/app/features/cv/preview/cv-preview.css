@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  flex: 1;
+  flex: 2;
   min-width: 0;
   min-height: 0;
 }
@@ -34,9 +34,10 @@
 
 .preview__body {
   /* min-height: 0 is what allows this scroll box to shrink below its content;
-     the default `auto` would keep the full CV height and push the zone away. */
-  min-height: 45em;
-  max-height: var(--preview-max-height);
+     the default `auto` would keep the full CV height and push the zone away.
+     It has to stay below max-height: a min-height larger than the max wins in
+     CSS, and this box would then never scroll, only grow. */
+  min-height: 0;
   overflow: auto;
   /* A long CV line (an email, a URL, a skill list) must not blow out the grid. */
   overflow-wrap: anywhere;

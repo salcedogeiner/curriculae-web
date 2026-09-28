@@ -1,7 +1,13 @@
 :host {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
+  /* A definite height, not just min-height: with an indefinite height the flex
+     algorithm resolves `flex: 1` on .app-main to its content size, so the
+     column never actually receives "the space left over" and the page grows a
+     few phantom pixels past the viewport. With the height defined, the chain
+     main -> .home -> .home__column -> .dropzone is exact, and content too tall
+     to fit overflows visibly and scrolls the page, which is the intent. */
+  height: 100dvh;
 }
 
 .skip-link {

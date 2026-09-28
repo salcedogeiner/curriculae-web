@@ -4,6 +4,7 @@ import {
   ElementRef,
   OnDestroy,
   afterNextRender,
+  effect,
   inject,
   signal,
   viewChild,
@@ -34,6 +35,7 @@ export class CvDropzone implements OnDestroy {
 
   private readonly input = viewChild.required<ElementRef<HTMLInputElement>>('fileInput');
   private readonly zone = viewChild.required<ElementRef<HTMLElement>>('zone');
+  private readonly errorBox = viewChild<ElementRef<HTMLElement>>('errorBox');
 
   protected readonly accept = CV_ACCEPT_ATTRIBUTE;
   // Unique per instance, so a second dropzone would not fight over the ids that
@@ -84,7 +86,50 @@ export class CvDropzone implements OnDestroy {
    */
   constructor() {
     afterNextRender(() => this.#guardWindowDrop());
+    effect(() => this.#focusNewError());
   }
+
+  /**
+   * `role="alert"` announces the error, but the keyboard cursor stays wherever it
+   * was — on the scroll region, or nowhere visible — so a keyboard or screen
+   * reader user is told what went wrong without being taken there
+   * (a11y-audit checklist §4: "errors are announced and focus moves to them").
+   */
+  #focusNewError(): void {
+    const message = this.errorMessage();
+
+    if (!this.sawFirstRun) {
+      // Only record the starting state. A component that renders with an issue
+      // already set must not yank focus on load; what is worth moving the cursor
+      // to is an error that appears while the user is on the page.
+      this.sawFirstRun = true;
+      this.focusedError = message;
+      return;
+    }
+
+    if (message === null) {
+      // Cleared: forget it, so the same message can move focus again later.
+      this.focusedError = null;
+      return;
+    }
+    if (message === this.focusedError) {
+      return;
+    }
+
+    // Reading errorBox() subscribes this effect to the view, so a run that finds
+    // no element yet leaves the error unfocused — and focusedError untouched —
+    // and the run that finds it is the one that moves the focus.
+    const box = this.errorBox()?.nativeElement;
+    if (box === undefined) {
+      return;
+    }
+    this.focusedError = message;
+    box.focus();
+  }
+
+  private sawFirstRun = false;
+  /** The error focus was last moved to; null when there is none or it cleared. */
+  private focusedError: string | null = null;
 
   ngOnDestroy(): void {
     this.#removeWindowDropGuard();

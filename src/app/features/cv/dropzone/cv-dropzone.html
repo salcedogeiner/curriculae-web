@@ -53,8 +53,10 @@
 </div>
 
 <!-- Below the zone: the error first (role=alert), then the loaded file summary. -->
+<!-- tabindex="-1": focusable by script only, so the error can receive focus when it
+     appears without adding a stop to the tab order. -->
 @if (errorMessage(); as error) {
-  <div class="dropzone-error" role="alert">
+  <div #errorBox class="dropzone-error" role="alert" tabindex="-1">
     <svg class="dropzone-error__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75" />
       <path d="M12 7.5v5.5M12 16.2v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />

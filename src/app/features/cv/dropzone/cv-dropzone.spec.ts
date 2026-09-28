@@ -103,6 +103,63 @@ describe('CvDropzone', () => {
     expect(alert?.textContent).toContain('no es un formato admitido');
   });
 
+  it('mueve el foco al error cuando aparece, no solo lo anuncia', async () => {
+    const { fixture, el } = await render();
+
+    const input = el.querySelector<HTMLInputElement>('input[type="file"]')!;
+    input.focus();
+    expect(document.activeElement).toBe(input);
+
+    attachFiles(input, [new File(['x'], 'cv.rtf', { type: 'application/rtf' })]);
+    input.dispatchEvent(new Event('change'));
+
+    await fixture.whenStable();
+    await fixture.whenStable();
+
+    // The alert itself takes the focus, so its text is what gets read out.
+    const alert = el.querySelector<HTMLElement>('[role="alert"]');
+    expect(alert).not.toBeNull();
+    expect(document.activeElement).toBe(alert);
+    // Programmatic focus only: the error must not become a tab stop.
+    expect(alert?.getAttribute('tabindex')).toBe('-1');
+  });
+
+  it('no roba el foco al pintarse con un error ya presente', async () => {
+    await TestBed.inject(CvImportService).import(new File(['x'], 'cv.rtf', { type: 'application/rtf' }));
+
+    const outside = document.createElement('button');
+    document.body.appendChild(outside);
+    outside.focus();
+
+    await render();
+
+    expect(document.activeElement).toBe(outside);
+    outside.remove();
+  });
+
+  it('vuelve a mover el foco si el mismo error se repite tras limpiarlo', async () => {
+    const { fixture, el } = await render();
+    const service = TestBed.inject(CvImportService);
+    const alert = () => el.querySelector<HTMLElement>('[role="alert"]');
+
+    const input = el.querySelector<HTMLInputElement>('input[type="file"]')!;
+    attachFiles(input, [new File(['x'], 'cv.rtf', { type: 'application/rtf' })]);
+    input.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(alert());
+
+    service.clearIssue();
+    await fixture.whenStable();
+    expect(alert()).toBeNull();
+
+    attachFiles(input, [new File(['x'], 'cv.rtf', { type: 'application/rtf' })]);
+    input.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(alert());
+  });
+
   it('expone una región aria-live para el progreso y la carga correcta', async () => {
     const { el } = await render();
 
