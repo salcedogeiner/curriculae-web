@@ -1,12 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  CvParseError,
-  hasReadableContent,
-  isPdfSupported,
-  normaliseCvText,
-  parseCvFile,
-  resetPdfjsCacheForTests,
-} from './cv-parser';
+import { CvParseError, isPdfSupported, parseCvFile, resetPdfjsCacheForTests } from './cv-parser';
 
 const getDocument = vi.fn();
 const extractRawText = vi.fn();
@@ -197,23 +190,6 @@ describe('parseCvFile — DOCX', () => {  beforeEach(() => {
     const error = await expectParse(blob('cifrado.docx', DOCX_MIME));
 
     expect(error.code).toBe('corrupt-file');
-  });
-});
-
-describe('normaliseCvText', () => {
-  it('colapsa líneas en blanco, quita el final de línea y unifica los saltos', () => {
-    expect(normaliseCvText('a  \r\n\n\n\n\nb')).toBe('a\n\nb');
-  });
-
-  it('conserva un salto simple dentro de un párrafo', () => {
-    expect(normaliseCvText('uno\ndos')).toBe('uno\ndos');
-  });
-});
-
-describe('hasReadableContent', () => {
-  it('descarta el texto que solo es espacio en blanco', () => {
-    expect(hasReadableContent('  \n\t ')).toBe(false);
-    expect(hasReadableContent('a')).toBe(true);
   });
 });
 

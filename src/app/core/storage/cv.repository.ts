@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { hasReadableContent, normaliseCvText } from '../../features/cv/import/cv-parser';
 import type { CvFormat } from '../../features/cv/cv-file';
+import { hasReadableContent, normaliseCvText } from '../text/cv-text';
 
 /**
  * The base CV is the only sizeable thing this app persists, and it is the user's

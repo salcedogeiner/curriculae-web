@@ -97,6 +97,8 @@ src/
     core/
       i18n/                  messages.ts (Spanish catalogue) + i18n.ts + its spec
       storage/               cv.repository.ts — versioned localStorage
+      text/                  cv-text.ts — CV text normalisation, shared by the
+                             import pipeline and the storage validator
     features/
       cv/                    step 1, one folder per piece of the flow
         cv-file.ts           accepted formats, validation, size limit; shared

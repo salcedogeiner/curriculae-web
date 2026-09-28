@@ -1,3 +1,4 @@
+import { hasReadableContent, normaliseCvText } from '../../../core/text/cv-text';
 import { detectCvFormat, isLegacyWordFile, type CvFormat } from '../cv-file';
 
 /**
@@ -215,22 +216,4 @@ function verticalOffset(transform: unknown): number | null {
     return null;
   }
   return transform[5];
-}
-
-/**
- * One plain-text shape for all four sources (cv-pipeline skill, step 1). The
- * section split (contact / profile / experience / education / skills) is layered
- * on top of this, not inside it.
- */
-export function normaliseCvText(raw: string): string {
-  return raw
-    .replace(/\r\n?/g, '\n')
-    .replace(/\u00a0/g, ' ')
-    .replace(/[^\S\n]+$/gm, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-}
-
-export function hasReadableContent(text: string): boolean {
-  return text.replace(/\s/g, '').length > 0;
 }
