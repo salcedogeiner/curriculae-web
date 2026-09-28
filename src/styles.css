@@ -1,1 +1,191 @@
-/* You can add global styles to this file, and also import other style files */
+/* Curriculae — global styles + design tokens.
+   The palette below is the AA-verified set from .agents/skills/styling/references/tokens.md.
+   Raw colours are allowed HERE and nowhere else. */
+
+:root {
+  color-scheme: light dark;
+
+  /* ── Superficies ─────────────────────────────────────────── */
+  --color-bg: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0f2f5;
+  --color-border: #d9dee5;
+  --color-border-strong: #b6bfcc;
+
+  /* ── Texto ───────────────────────────────────────────────── */
+  --color-text: #14181f;
+  --color-text-muted: #566070;
+  --color-text-inverse: #ffffff;
+
+  /* ── Acento ──────────────────────────────────────────────── */
+  --color-accent: #1f5eff;
+  --color-accent-hover: #1a4fdb;
+  --color-accent-soft: #e8efff;
+
+  /* ── Semánticos ──────────────────────────────────────────── */
+  --color-success: #0f7a4d;
+  --color-warning: #8a5a00;
+  --color-danger: #b3261e;
+  --color-info: #0b6a8f;
+
+  /* ── Radios y sombras ────────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --shadow-1: 0 1px 2px rgb(20 24 31 / 0.06), 0 1px 3px rgb(20 24 31 / 0.1);
+  --shadow-2: 0 8px 24px rgb(20 24 31 / 0.12);
+
+  /* ── Espaciado (escala de 4 px) ──────────────────────────── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  /* ── Tipografía ──────────────────────────────────────────── */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-fluid: clamp(1.25rem, 1rem + 1.2vw, 1.75rem);
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.55;
+
+  /* ── Foco y capas ────────────────────────────────────────── */
+  --focus-ring: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-accent);
+  --z-dropdown: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+
+  /* ── Métricas ────────────────────────────────────────────── */
+  --content-width: 85%;
+  --sidebar-width: 16rem;
+  /* Alto máximo de la previsualización del CV, para que el área de soltar
+     nunca quede aplastada en pantallas bajas. */
+  --preview-max-height: 16rem;
+  /* Alto mínimo del área de soltar: por debajo deja de ser un objetivo cómodo. */
+  --dropzone-min-height: 13rem;
+
+  /* ── Movimiento ──────────────────────────────────────────── */
+  --motion-fast: 120ms;
+  --motion-normal: 200ms;
+}
+
+/* Dark: system preference, unless the user pinned a theme. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --color-bg: #14181f;
+    --color-surface: #1c222b;
+    --color-surface-2: #232a35;
+    --color-border: #333c4a;
+    --color-border-strong: #4a5567;
+
+    --color-text: #e8ecf1;
+    --color-text-muted: #a3adba;
+    --color-text-inverse: #14181f;
+
+    --color-accent: #7aa2ff;
+    --color-accent-hover: #9bb8ff;
+    --color-accent-soft: #1d2941;
+
+    --color-success: #4ec98a;
+    --color-warning: #e0a33a;
+    --color-danger: #f08b84;
+    --color-info: #5fc0e0;
+
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-2: 0 8px 24px rgb(0 0 0 / 0.5);
+  }
+}
+
+/* Dark pinned manually. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --color-bg: #14181f;
+  --color-surface: #1c222b;
+  --color-surface-2: #232a35;
+  --color-border: #333c4a;
+  --color-border-strong: #4a5567;
+
+  --color-text: #e8ecf1;
+  --color-text-muted: #a3adba;
+  --color-text-inverse: #14181f;
+
+  --color-accent: #7aa2ff;
+  --color-accent-hover: #9bb8ff;
+  --color-accent-soft: #1d2941;
+
+  --color-success: #4ec98a;
+  --color-warning: #e0a33a;
+  --color-danger: #f08b84;
+  --color-info: #5fc0e0;
+
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.5);
+}
+
+/* ── Base ───────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* A double ring that survives forced-colors / high-contrast mode, because the
+   outline itself is transparent. Never `outline: none` without this replacement. */
+:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: var(--focus-ring);
+}
+
+/* Visible only to assistive tech, still focusable and announced. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

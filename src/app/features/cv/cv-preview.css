@@ -1,0 +1,57 @@
+:host {
+  /* A column, so that when the parent shrinks this component the scrollable
+     body is what gives up height — a block child would size to its content and
+     overflow instead. */
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.preview__title {
+  flex: none;
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.preview__meta {
+  flex: none;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.preview__body {
+  /* min-height: 0 is what allows this scroll box to shrink below its content;
+     the default `auto` would keep the full CV height and push the zone away. */
+  min-height: 45em;
+  max-height: var(--preview-max-height);
+  overflow: auto;
+  /* A long CV line (an email, a URL, a skill list) must not blow out the grid. */
+  overflow-wrap: anywhere;
+  padding: var(--space-3);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.preview__text {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  /* pre-wrap keeps the CV's own line breaks without ever overflowing. */
+  white-space: pre-wrap;
+  color: var(--color-text);
+}

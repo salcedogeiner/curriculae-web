@@ -87,21 +87,38 @@ AGENTS.md                    ← this file: the mental model and the rules
 │                                references/). Load the relevant one, §6.
 src/
   main.ts                    bootstrapApplication(App, appConfig)
-  index.html                 <app-root>, lang="es" TODO
-  styles.css                 global styles + design tokens (CSS custom properties)
+  index.html                 <app-root>, lang="es"
+  styles.css                 global styles + design tokens (light/dark)
   app/
-    app.ts / app.html / app.css   root component; app.html is still the ~20 kB
-                                 CLI placeholder and MUST be replaced
+    app.ts / app.html / app.css   shell: skip link, site title, <router-outlet>
     app.config.ts            providers: provideBrowserGlobalErrorListeners, provideRouter
-    app.routes.ts            empty; wire the feature routes here
-    app.spec.ts              2 passing smoke tests
+    app.routes.ts            home route → features/cv (lazy)
+    app.spec.ts              4 passing smoke tests
+    core/
+      i18n/                  messages.ts (Spanish catalogue) + i18n.ts + its spec
+      storage/               cv.repository.ts — versioned localStorage
+    features/
+      cv/                    step 1: home page, drop zone, import + parsing
+        cv-home.*            home page (the empty right column is the next step)
+        cv-dropzone.*        drag & drop, built on a real <input type="file">
+        cv-preview.*         read-only preview of the extracted text
+        cv-import.service.ts validate → parse → normalise → persist, as signals
+        cv-parser.ts         lazy pdfjs-dist / mammoth extraction
+        cv-file.ts           accepted formats, validation, size limit
 angular.json  package.json  tsconfig*.json  .prettierrc  .editorconfig
 .vscode/                     launch, tasks, extensions
 ```
 
+Runtime dependencies added so far: `pdfjs-dist` (PDF text) and `mammoth`
+(DOCX text), both `import()`ed on demand so they stay out of the `initial`
+bundle. `pdfjs-dist` is pinned to 5.7.x on purpose — 6.x requires
+`Uint8Array.prototype.toHex`, a 2025 platform feature; see the comment in
+`cv-parser.ts`. `marked`, `jspdf` and `docx` are still unused.
+
 ## 3. Target architecture
 
-Not built yet — create it as the features land, in this order.
+Built so far: `core/i18n`, `core/storage` and `features/cv` (step 1). The rest
+lands as the features arrive, in this order.
 
 ```
 src/app/
@@ -235,6 +252,11 @@ and the print stylesheet.
 UI strings are Spanish and must not be hardcoded in templates. Centralise them in
 the i18n layer and reference them by key, so adding a locale later is a file
 addition. `lang="es"` in `index.html`.
+
+`I18n.t()` formats a **number** param with the active locale, so pass the raw
+number (`{ chars: cv.charCount }`) and never pre-format it: Spanish writes
+`25.000`, and doing it at the call site means every call site has to remember.
+Pre-formatted strings (`humanFileSize`, format lists) pass through untouched.
 
 ### Git
 

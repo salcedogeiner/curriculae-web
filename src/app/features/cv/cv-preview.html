@@ -1,0 +1,14 @@
+<section class="preview" [attr.aria-labelledby]="headingId">
+  <h3 class="preview__title" [id]="headingId">{{ i18n.t('cv.preview.title') }}</h3>
+  <p class="preview__meta">
+    {{ i18n.t('cv.preview.meta', { chars: charCount(), fileName: fileName() }) }}
+  </p>
+
+  <!--
+    A scrollable region needs to be focusable, otherwise a keyboard user cannot
+    scroll it (WCAG 2.1.1). `role="group"` names it without inventing a landmark.
+  -->
+  <div class="preview__body" role="group" [attr.aria-label]="i18n.t('cv.preview.bodyLabel')" tabindex="0">
+    <pre class="preview__text">{{ text() }}</pre>
+  </div>
+</section>

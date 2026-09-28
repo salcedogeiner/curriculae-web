@@ -1,0 +1,239 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  /* Takes the height the column has left over, so the drop target fills the
+     left half instead of hugging its own content. */
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+.dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+  /* min-height, never height: a tall hint must not clip (styling skill). */
+  min-height: var(--dropzone-min-height);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 2px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  transition:
+    border-color var(--motion-normal) ease,
+    background-color var(--motion-normal) ease;
+}
+
+.dropzone--active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+/* Solid once a file is in: the zone still invites a replacement rather than
+   reading as "done, ignore me". */
+.dropzone--loaded {
+  border-style: solid;
+  border-color: var(--color-border-strong);
+}
+
+/* The label is the accessible name of the input it points at. */
+.dropzone__label {
+  flex: none;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Real <input type="file"> stretched over the whole surface: the pointer target,
+   the tab stop and the announcement are the same element. */
+.dropzone__input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dropzone--busy .dropzone__input {
+  cursor: progress;
+}
+
+.dropzone:focus-within {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  box-shadow: var(--focus-ring);
+}
+
+.dropzone__panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 0;
+  /* The input sits on top; clicks belong to it, not to the content underneath. */
+  pointer-events: none;
+  text-align: center;
+}
+
+.dropzone__icon {
+  flex: none;
+  width: var(--space-7);
+  height: var(--space-7);
+  color: var(--color-accent);
+}
+
+.dropzone__title {
+  margin: 0;
+  max-width: 32ch;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.dropzone__or {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.dropzone__action {
+  margin-top: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: background-color var(--motion-fast) ease;
+}
+
+.dropzone__action:hover {
+  background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+.dropzone__hint {
+  flex: none;
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.dropzone__spinner {
+  width: var(--space-6);
+  height: var(--space-6);
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: dropzone-spin 900ms linear infinite;
+}
+
+@keyframes dropzone-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.dropzone__file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+  margin: var(--space-3) 0 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+}
+
+.dropzone__file-icon {
+  flex: none;
+  width: var(--space-5);
+  height: var(--space-5);
+  color: var(--color-success);
+}
+
+.dropzone__file-text {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.dropzone__file-change {
+  flex: none;
+  padding: var(--space-1) var(--space-3);
+  background: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dropzone__file-change:hover {
+  background: var(--color-accent-soft);
+}
+
+.dropzone-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-surface-2);
+  border-left: 3px solid var(--color-danger);
+  border-radius: var(--radius-sm);
+}
+
+.dropzone-error__icon {
+  flex: none;
+  width: var(--space-5);
+  height: var(--space-5);
+  color: var(--color-danger);
+}
+
+.dropzone-error__text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.dropzone-error__retry {
+  flex: none;
+  padding: var(--space-1) var(--space-3);
+  background: transparent;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dropzone-error__retry:hover {
+  background: var(--color-accent-soft);
+}

@@ -1,0 +1,72 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: var(--z-dropdown);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  text-decoration: none;
+  /* Off-screen until focused, not `display: none` — that would remove it from
+     the tab order (a11y-audit checklist §1). */
+  transform: translateY(-200%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+.app-header {
+  flex: none;
+  padding: var(--space-5) var(--space-4);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+}
+
+.app-header__title {
+  margin: 0;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  letter-spacing: -0.015em;
+  color: var(--color-text);
+}
+
+.app-header__tagline {
+  margin: 0;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* A flex column so the routed page can fill the space left by the header, which
+   is what lets the drop zone cover the whole left half. */
+.app-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-5) var(--space-4) var(--space-6);
+}
+
+.app-main:focus {
+  outline: none;
+}

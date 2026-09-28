@@ -1,0 +1,51 @@
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.home {
+  display: grid;
+  /* Two equal columns: the left one holds intro, preview and the drop zone; the
+     right one is the slot for the vacancy and the analysis in the next steps. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+}
+
+.home__column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+  min-height: 0;
+}
+
+.home__intro {
+  flex: none;
+}
+
+.home__title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  color: var(--color-text);
+}
+
+.home__lead {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* One column once a second half exists and the viewport cannot hold both. */
+@media (max-width: 60rem) {
+  .home {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

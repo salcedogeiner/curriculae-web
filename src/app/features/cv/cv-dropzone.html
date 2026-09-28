@@ -1,0 +1,96 @@
+<div
+  #zone
+  class="dropzone"
+  [class.dropzone--active]="isDragActive()"
+  [class.dropzone--busy]="busy()"
+  [class.dropzone--loaded]="cvImport.hasCv()"
+  (dragenter)="onDragEnter($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)"
+  (drop)="onDrop($event)"
+>
+  <label class="dropzone__label" [for]="inputId">{{ i18n.t('cv.dropzone.legend') }}</label>
+
+  <!-- The real control: covers the zone, keeps native focus and the OS picker. -->
+  <input
+    #fileInput
+    class="dropzone__input"
+    type="file"
+    [id]="inputId"
+    [attr.accept]="accept"
+    [disabled]="busy()"
+    [attr.aria-busy]="busy()"
+    [attr.aria-describedby]="hintId"
+    (change)="onFileSelected($event)"
+  />
+
+  @if (busy()) {
+    <div class="dropzone__panel" aria-hidden="true">
+      <span class="dropzone__spinner"></span>
+      <p class="dropzone__title">{{ progressLabel() }}</p>
+    </div>
+  } @else {
+    <div class="dropzone__panel" [class.dropzone__panel--active]="isDragActive()">
+      <svg class="dropzone__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path
+          d="M12 16V4m0 0L8 8m4-4 4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <p class="dropzone__title">
+        {{ isDragActive() ? i18n.t('cv.dropzone.dragActive') : i18n.t('cv.dropzone.title') }}
+      </p>
+      <p class="dropzone__or">{{ i18n.t('cv.dropzone.or') }}</p>
+      <span class="dropzone__action">{{ i18n.t('cv.dropzone.action') }}</span>
+    </div>
+  }
+
+  <p class="dropzone__hint" [id]="hintId">{{ hint() }}</p>
+</div>
+
+<!-- Below the zone: the error first (role=alert), then the loaded file summary. -->
+@if (errorMessage(); as error) {
+  <div class="dropzone-error" role="alert">
+    <svg class="dropzone-error__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.75" />
+      <path d="M12 7.5v5.5M12 16.2v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+    </svg>
+    <p class="dropzone-error__text">{{ error }}</p>
+    <button type="button" class="dropzone-error__retry" (click)="onRetry()">
+      {{ i18n.t('cv.dropzone.change') }}
+    </button>
+  </div>
+}
+
+@if (loadedMessage(); as loaded) {
+  <p class="dropzone__file">
+    <svg class="dropzone__file-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        d="M20 6 9 17l-5-5"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    <span class="dropzone__file-text">{{ loaded }}</span>
+    <button type="button" class="dropzone__file-change" (click)="openPicker()">
+      {{ i18n.t('cv.dropzone.change') }}
+    </button>
+  </p>
+}
+
+<!-- Status region: one polite live region, present from the start so that the
+     text inserted into it is actually announced. -->
+<div class="visually-hidden" aria-live="polite" [id]="statusId">
+  @if (busy()) {
+    {{ progressLabel() }}
+  } @else if (loadedMessage(); as loaded) {
+    {{ loaded }}
+  }
+</div>

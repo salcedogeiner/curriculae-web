@@ -27,6 +27,17 @@
             ],
             "styles": [
               "src/styles.css"
+            ],
+            "allowedCommonJsDependencies": [
+              "mammoth",
+              "jszip",
+              "xmlbuilder",
+              "@xmldom/xmldom",
+              "@xmldom/xmldom/lib/dom",
+              "dingbat-to-unicode",
+              "pako",
+              "lop",
+              "base64-js"
             ]
           },
           "configurations": {
