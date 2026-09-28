@@ -92,7 +92,7 @@ src/
   app/
     app.ts / app.html / app.css   shell: skip link, site title, <router-outlet>
     app.config.ts            providers: provideBrowserGlobalErrorListeners, provideRouter
-    app.routes.ts            home route → features/cv (lazy)
+    app.routes.ts            home route → pages/home (lazy)
     app.spec.ts              4 passing smoke tests
     core/
       i18n/                  messages.ts (Spanish catalogue) + i18n.ts + its spec
@@ -102,14 +102,16 @@ src/
     features/
       cv/                    step 1, one folder per piece of the flow
         cv-file.ts           accepted formats, validation, size limit; shared
-        home/                cv-home.* — the page (the empty right column is
-                             the next step)
         dropzone/            cv-dropzone.* — drag & drop, built on a real
                              <input type="file">
         preview/             cv-preview.* — read-only preview of the text
         import/              cv-import.service.* — validate → parse → normalise
                              → persist, as signals
                              cv-parser.* — lazy pdfjs-dist / mammoth extraction
+    pages/                  the routed pages: composition only, no logic of
+                             their own; they assemble features
+      home/                 cv-home.* — the only page so far (its empty right
+                             column is the next step)
 angular.json  package.json  tsconfig*.json  .prettierrc  .editorconfig
 .vscode/                     launch, tasks, extensions
 ```
@@ -122,32 +124,37 @@ bundle. `pdfjs-dist` is pinned to 5.7.x on purpose — 6.x requires
 
 ## 3. Target architecture
 
-Built so far: `core/i18n`, `core/storage` and `features/cv` (step 1). The rest
-lands as the features arrive, in this order.
+Built so far: `core/i18n`, `core/storage`, `core/text` and `features/cv` (step
+1), with its one page in `pages/home`. The rest lands as the features arrive, in
+this order.
 
 ```
 src/app/
+  pages/                    routed pages — composition only, they assemble features
+    home/                   the base-CV page
   core/
-    llm/                     THE ONLY place that talks to a model
-      engine.types.ts        EngineKind, EngineDescriptor, EngineTier, ChatMessage
+    llm/                    THE ONLY place that talks to a model
+      engine.types.ts       EngineKind, EngineDescriptor, EngineTier, ChatMessage
       local/ollama.adapter.ts, llamacpp.adapter.ts
       agent/claude.adapter.ts, opencode.adapter.ts, codex.adapter.ts
-      detection/probe.ts     port/base-URL probing with timeout + abort
-      llm.service.ts         facade: detect(), listModels(), complete()
-    storage/                 versioned localStorage repository
-    i18n/                    Spanish message catalogue
+      detection/probe.ts    port/base-URL probing with timeout + abort
+      llm.service.ts        facade: detect(), listModels(), complete()
+    storage/                versioned localStorage repository
+    text/                   CV text normalisation
+    i18n/                   Spanish message catalogue
   features/
-    cv/                      load + manage the base résumé (paste / PDF / DOCX / MD)
-    vacancy/                 paste and hold the vacancy text
-    analysis/                match score + gap report
-    adapted/                 adapted CV preview + export
-    settings/                engine selection, consent, model picker
-  shared/ui/                 presentational components only
+    cv/                     load + manage the base résumé (paste / PDF / DOCX / MD)
+    vacancy/                paste and hold the vacancy text
+    analysis/               match score + gap report
+    adapted/                adapted CV preview + export
+    settings/               engine selection, consent, model picker
+  shared/ui/                presentational components only
 ```
 
-Rules: features are lazy-loaded routes; `shared/ui` holds no business logic and no
-engine calls; every adapter implements one narrow interface so adding a backend never
-touches a feature.
+Rules: a `pages/*` component is the lazy-loaded route and holds composition only,
+never feature logic; `features/*` hold the reusable pieces a page assembles;
+`shared/ui` holds no business logic and no engine calls; every adapter implements
+one narrow interface so adding a backend never touches a feature.
 
 ---
 

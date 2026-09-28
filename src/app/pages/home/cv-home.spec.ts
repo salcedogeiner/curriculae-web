@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { CvHome } from './cv-home';
-import { CvImportService } from '../import/cv-import.service';
+import { CvImportService } from '../../features/cv/import/cv-import.service';
 
 describe('CvHome', () => {
   beforeEach(async () => {

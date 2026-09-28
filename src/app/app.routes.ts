@@ -4,7 +4,7 @@ export const routes: Routes = [
   {
     path: '',
     title: 'Curriculae',
-    loadComponent: () => import('./features/cv/home/cv-home').then((m) => m.CvHome),
+    loadComponent: () => import('./pages/home/cv-home').then((m) => m.CvHome),
   },
   { path: '**', redirectTo: '' },
 ];
