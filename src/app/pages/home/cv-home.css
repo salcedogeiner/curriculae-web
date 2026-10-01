@@ -5,15 +5,24 @@
 }
 
 .home {
-  display: grid;
-  /* Two equal columns: the left one holds intro, preview and the drop zone; the
-     right one is the slot for the vacancy and the analysis in the next steps. */
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: var(--space-6);
   flex: 1;
   width: 100%;
   max-width: var(--content-width);
   margin: 0 auto;
+}
+
+/* Two equal columns that fill the first screen: the base CV on the left, the
+   vacancy form on the right. Result and history follow below the fold, and
+   the page scrolls to them. */
+.home__steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6);
+  flex: 1 0 auto;
+  min-height: 0;
 }
 
 .home__column {
@@ -43,9 +52,9 @@
   overflow-wrap: anywhere;
 }
 
-/* One column once a second half exists and the viewport cannot hold both. */
+/* One column once the viewport cannot hold both halves. */
 @media (max-width: 60rem) {
-  .home {
+  .home__steps {
     grid-template-columns: minmax(0, 1fr);
   }
 }

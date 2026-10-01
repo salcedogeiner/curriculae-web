@@ -1,12 +1,18 @@
 {
   "name": "curriculae-web",
   "version": "0.0.0",
+  "description": "Adapta tu hoja de vida a una vacante con un modelo de IA local.",
+  "main": "electron/main.mjs",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:desktop": "vitest run --config electron/vitest.config.mjs",
+    "typecheck:desktop": "tsc -p electron/tsconfig.json",
+    "desktop": "ng build && node electron/launch.mjs",
+    "desktop:dev": "node electron/launch.mjs --dev"
   },
   "private": true,
   "packageManager": "npm@11.19.0",
@@ -17,6 +23,7 @@
     "@angular/forms": "^22.2.0",
     "@angular/platform-browser": "^22.2.0",
     "@angular/router": "^22.2.0",
+    "docx": "^9.8.1",
     "mammoth": "^1.13.0",
     "pdfjs-dist": "^5.7.284",
     "rxjs": "~7.8.0",
@@ -26,6 +33,7 @@
     "@angular/build": "^22.2.0",
     "@angular/cli": "^22.2.0",
     "@angular/compiler-cli": "^22.2.0",
+    "electron": "^44.5.1",
     "jsdom": "^30.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",

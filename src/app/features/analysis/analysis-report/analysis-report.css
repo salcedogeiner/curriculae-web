@@ -1,0 +1,141 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.report {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  overflow-wrap: anywhere;
+}
+
+.report__title {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.score {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-2);
+  border-radius: var(--radius-md);
+  --score-color: var(--color-danger);
+}
+
+.score[data-level='medium'] {
+  --score-color: var(--color-warning);
+}
+
+.score[data-level='high'] {
+  --score-color: var(--color-success);
+}
+
+.score__value {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.score__number {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  color: var(--score-color);
+}
+
+.score__label {
+  color: var(--color-text-muted);
+}
+
+.score__meter {
+  width: 100%;
+  height: var(--space-3);
+}
+
+.report__summary {
+  margin: 0;
+}
+
+.report__subtitle {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.report__list {
+  margin: 0;
+  padding-left: var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.report__list--gaps li::marker {
+  color: var(--color-danger);
+}
+
+.report__empty {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.report__details summary {
+  cursor: pointer;
+}
+
+.reqs {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.req {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.req__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+}
+
+.req__verdict {
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.req__verdict[data-verdict='match'] {
+  color: var(--color-success);
+}
+
+.req__verdict[data-verdict='partial'] {
+  color: var(--color-warning);
+}
+
+.req__verdict[data-verdict='missing'] {
+  color: var(--color-danger);
+}
+
+.req__importance {
+  color: var(--color-text-muted);
+}
+
+.req__text {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+}
+
+.req__evidence {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-xs);
+  font-style: italic;
+  color: var(--color-text-muted);
+}

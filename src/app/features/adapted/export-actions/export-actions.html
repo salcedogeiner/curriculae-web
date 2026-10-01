@@ -1,0 +1,30 @@
+<div class="export" role="group" aria-labelledby="export-title">
+  <p class="export__title" id="export-title">{{ i18n.t('export.title') }}</p>
+  <div class="export__buttons">
+    @for (format of formats; track format.id) {
+      <button
+        type="button"
+        class="export__button"
+        [disabled]="exporter.busy()"
+        (click)="run(format.id)"
+      >
+        {{ format.label }}
+      </button>
+    }
+    <button type="button" class="export__button" (click)="copy()">
+      {{ i18n.t('export.copy') }}
+    </button>
+    @if (workspace.available && source().folderId; as folderId) {
+      <button
+        type="button"
+        class="export__button export__button--quiet"
+        (click)="openFolder(folderId)"
+      >
+        {{ i18n.t('workspace.openRoot') }}
+      </button>
+    }
+  </div>
+  <p class="export__status" [class.export__status--error]="failed()" aria-live="polite">
+    {{ message() }}
+  </p>
+</div>

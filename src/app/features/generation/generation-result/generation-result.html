@@ -1,0 +1,33 @@
+@if (live()) {
+  <section class="result" aria-labelledby="draft-title">
+    <h2 class="result__title" id="draft-title">{{ i18n.t('result.draftTitle') }}</h2>
+    <app-adapted-preview [markdown]="generation.draft()" [live]="true" />
+  </section>
+} @else if (generation.result(); as result) {
+  <section class="result" aria-labelledby="result-title">
+    <header class="result__head">
+      <h2 class="result__title" id="result-title" tabindex="-1" #heading>
+        {{ i18n.t('result.title') }}
+      </h2>
+      <p class="result__meta">{{ meta() }}{{ baseCvLabel() }}</p>
+    </header>
+
+    <div class="result__grid">
+      <div class="result__main">
+        <h3 class="result__subtitle">{{ i18n.t('adapted.title') }}</h3>
+        <app-adapted-preview [markdown]="result.adaptedCv" [unverified]="result.unverified" />
+      </div>
+
+      <aside class="result__aside">
+        @if (exportSource(); as source) {
+          <app-export-actions [source]="source" />
+        }
+        <app-analysis-report [analysis]="result.analysis" />
+        <details class="result__vacancy">
+          <summary>{{ i18n.t('result.vacancy') }}</summary>
+          <pre class="result__vacancy-text" tabindex="0">{{ result.vacancyText }}</pre>
+        </details>
+      </aside>
+    </div>
+  </section>
+}

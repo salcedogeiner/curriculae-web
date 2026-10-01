@@ -38,6 +38,9 @@
      It has to stay below max-height: a min-height larger than the max wins in
      CSS, and this box would then never scroll, only grow. */
   min-height: 0;
+  /* The page grows below the fold now (result, history), so the column no
+     longer caps this box by itself: a long CV must not push the drop zone away. */
+  max-height: var(--preview-max-height);
   overflow: auto;
   /* A long CV line (an email, a URL, a skill list) must not blow out the grid. */
   overflow-wrap: anywhere;

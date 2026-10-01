@@ -1,0 +1,94 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.result__title {
+  margin: 0;
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
+  scroll-margin-top: var(--space-4);
+}
+
+/* Focused by script only (tabindex=-1) to announce a new result; it is not an
+   interactive control, so it gets no focus ring. */
+.result__title:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.result__meta {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* The document takes the larger share; the analysis reads as its margin notes. */
+.result__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.result__main,
+.result__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.result__subtitle {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.result__vacancy summary {
+  width: fit-content;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.result__vacancy-text {
+  max-height: 24rem;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-3);
+  overflow: auto;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 60rem) {
+  .result__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media print {
+  .result__head,
+  .result__aside,
+  .result__subtitle {
+    display: none;
+  }
+
+  .result {
+    padding: 0;
+    border: 0;
+  }
+}

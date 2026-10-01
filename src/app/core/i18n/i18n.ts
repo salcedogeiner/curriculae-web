@@ -15,6 +15,7 @@ export class I18n {
 
   private readonly catalogues: Readonly<Record<Locale, Catalogue>> = { es };
   private readonly formatters = new Map<Locale, Intl.NumberFormat>();
+  private readonly dateFormatters = new Map<Locale, Intl.DateTimeFormat>();
 
   /** Resolves a dotted key, interpolating `{placeholders}`. Unknown keys throw in dev. */
   t(key: MessageKey, params?: MessageParams): string {
@@ -39,6 +40,21 @@ export class I18n {
       // arrive pre-formatted (file sizes, format lists) and pass through.
       return typeof param === 'number' ? this.#numberFormat(locale).format(param) : param;
     });
+  }
+
+  /** An ISO timestamp as the active locale writes it: "1 oct 2026, 08:30". */
+  formatDate(iso: string): string {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) {
+      return iso;
+    }
+    const locale = this.locale();
+    let formatter = this.dateFormatters.get(locale);
+    if (!formatter) {
+      formatter = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });
+      this.dateFormatters.set(locale, formatter);
+    }
+    return formatter.format(date);
   }
 
   #numberFormat(locale: Locale): Intl.NumberFormat {

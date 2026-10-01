@@ -1,0 +1,89 @@
+@if (workspace.available) {
+  <div class="history">
+    <section class="history__workspace" aria-labelledby="workspace-title">
+      <h2 class="history__title" id="workspace-title">{{ i18n.t('workspace.title') }}</h2>
+      <p class="history__lead">{{ i18n.t('workspace.lead') }}</p>
+      @if (workspace.info(); as info) {
+        <dl class="paths">
+          <div class="paths__row">
+            <dt>{{ i18n.t('workspace.cvs') }}</dt>
+            <dd>
+              <code>{{ info.cvDir }}</code>
+            </dd>
+            <dd>
+              <button type="button" class="link" (click)="workspace.open({ kind: 'cvs' })">
+                {{ i18n.t('workspace.open') }}
+              </button>
+            </dd>
+          </div>
+          <div class="paths__row">
+            <dt>{{ i18n.t('workspace.offers') }}</dt>
+            <dd>
+              <code>{{ info.offersDir }}</code>
+            </dd>
+            <dd>
+              <button type="button" class="link" (click)="workspace.open({ kind: 'offers' })">
+                {{ i18n.t('workspace.open') }}
+              </button>
+            </dd>
+          </div>
+        </dl>
+      }
+      <button type="button" class="link" (click)="workspace.chooseRoot()">
+        {{ i18n.t('workspace.change') }}
+      </button>
+      @if (issueMessage(); as message) {
+        <p class="history__issue" role="alert">{{ message }}</p>
+      }
+    </section>
+
+    <section class="history__list-wrap" aria-labelledby="history-title">
+      <h2 class="history__title" id="history-title">{{ i18n.t('history.title') }}</h2>
+      @if (workspace.generations().length === 0) {
+        <p class="history__lead">{{ i18n.t('history.empty') }}</p>
+      } @else {
+        <ul class="history__list">
+          @for (item of workspace.generations(); track item.id) {
+            <li class="item" [class.item--current]="item.id === currentId()">
+              <div class="item__body">
+                <p class="item__title">{{ title(item) }}</p>
+                <p class="item__meta">
+                  {{ i18n.formatDate(item.createdAt) }}
+                  @if (item.modelLabel) {
+                    · {{ item.modelLabel }}
+                  }
+                  @if (item.id === currentId()) {
+                    · <strong>{{ i18n.t('history.current') }}</strong>
+                  }
+                </p>
+              </div>
+              @if (item.score !== null) {
+                <span class="item__score">{{
+                  i18n.t('history.score', { score: item.score })
+                }}</span>
+              }
+              <div class="item__actions">
+                <button
+                  type="button"
+                  class="link"
+                  [attr.aria-label]="i18n.t('history.showLabel', { title: title(item) })"
+                  (click)="show(item)"
+                >
+                  {{ i18n.t('history.show') }}
+                </button>
+                <button
+                  type="button"
+                  class="link"
+                  [attr.aria-label]="i18n.t('history.openFolderLabel', { title: title(item) })"
+                  (click)="openFolder(item)"
+                >
+                  {{ i18n.t('history.openFolder') }}
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  </div>
+}

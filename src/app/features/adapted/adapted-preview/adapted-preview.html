@@ -1,0 +1,94 @@
+@if (!live()) {
+  @if (unverified().length > 0) {
+    <div class="check check--warn">
+      <p class="check__title">{{ i18n.t('adapted.unverifiedTitle') }}</p>
+      <p class="check__lead">{{ i18n.t('adapted.unverifiedLead') }}</p>
+      <ul class="check__terms">
+        @for (term of unverified(); track term) {
+          <li class="check__term">{{ term }}</li>
+        }
+      </ul>
+    </div>
+  } @else {
+    <p class="check check--ok">{{ i18n.t('adapted.allVerified') }}</p>
+  }
+}
+
+<!-- Focusable so a keyboard user can scroll a long CV (WCAG 2.1.1). -->
+<article
+  class="cv"
+  [class.cv--live]="live()"
+  [attr.aria-label]="i18n.t('adapted.bodyLabel')"
+  [attr.aria-busy]="live()"
+  tabindex="0"
+>
+  @for (block of blocks(); track $index) {
+    @switch (block.kind) {
+      @case ('heading') {
+        @switch (block.level) {
+          @case (1) {
+            <h4 class="cv__name">
+              <ng-container *ngTemplateOutlet="inline; context: { $implicit: block.line }" />
+            </h4>
+          }
+          @case (2) {
+            <h5 class="cv__section">
+              <ng-container *ngTemplateOutlet="inline; context: { $implicit: block.line }" />
+            </h5>
+          }
+          @default {
+            <h6 class="cv__item">
+              <ng-container *ngTemplateOutlet="inline; context: { $implicit: block.line }" />
+            </h6>
+          }
+        }
+      }
+      @case ('paragraph') {
+        <p class="cv__para">
+          @for (line of block.lines; track $index; let last = $last) {
+            <ng-container *ngTemplateOutlet="inline; context: { $implicit: line }" />
+            @if (!last) {
+              <br />
+            }
+          }
+        </p>
+      }
+      @case ('list') {
+        @if (block.ordered) {
+          <ol class="cv__list">
+            @for (item of block.items; track $index) {
+              <li><ng-container *ngTemplateOutlet="inline; context: { $implicit: item }" /></li>
+            }
+          </ol>
+        } @else {
+          <ul class="cv__list">
+            @for (item of block.items; track $index) {
+              <li><ng-container *ngTemplateOutlet="inline; context: { $implicit: item }" /></li>
+            }
+          </ul>
+        }
+      }
+      @case ('rule') {
+        <hr class="cv__rule" />
+      }
+    }
+  }
+</article>
+
+<ng-template #inline let-segments>
+  @for (segment of segments; track $index) {
+    @if (segment.flagged) {
+      <mark class="cv__flag" [title]="i18n.t('adapted.flagged')"
+        >{{ segment.text
+        }}<span class="visually-hidden"> ({{ i18n.t('adapted.flagged') }})</span></mark
+      >
+    } @else if (segment.strong) {
+      <strong>{{ segment.text }}</strong>
+    } @else if (segment.emphasis) {
+      <em>{{ segment.text }}</em>
+    } @else {
+      <!-- Wrapped so the template's indentation never becomes a visible space. -->
+      <ng-container>{{ segment.text }}</ng-container>
+    }
+  }
+</ng-template>

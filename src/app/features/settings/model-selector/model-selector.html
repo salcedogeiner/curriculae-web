@@ -1,0 +1,103 @@
+<div class="model">
+  <div class="model__head">
+    <label class="model__label" [for]="selectId">{{ i18n.t('settings.model.label') }}</label>
+    <button type="button" class="model__refresh" (click)="detect()" [disabled]="llm.detecting()">
+      {{ i18n.t('settings.model.refresh') }}
+    </button>
+  </div>
+
+  <select
+    class="model__select"
+    [id]="selectId"
+    [disabled]="llm.detecting() || llm.models().length === 0"
+    [attr.aria-describedby]="hintId"
+    (change)="onSelect($event)"
+  >
+    <option value="" disabled [selected]="llm.selectedModel() === null">
+      {{ i18n.t('settings.model.placeholder') }}
+    </option>
+    @for (engine of readyEngines(); track engine.id) {
+      <optgroup [label]="groupLabel(engine)">
+        @for (model of engine.models; track model.id) {
+          <option [value]="model.id" [selected]="model.id === llm.selectedModel()?.id">
+            {{ model.label }}{{ model.details ? ' · ' + model.details : '' }}
+          </option>
+        }
+      </optgroup>
+    }
+  </select>
+
+  <!-- One polite live region, so the end of a detection is announced. -->
+  <div class="model__hint" [id]="hintId" aria-live="polite">
+    @if (llm.detecting()) {
+      <span class="model__spinner" aria-hidden="true"></span>
+      <span>{{ i18n.t('settings.model.detecting') }}</span>
+    } @else if (llm.selectedModel(); as model) {
+      @if (model.tier === 'local') {
+        <span class="badge badge--local" [title]="i18n.t('settings.model.badgeLocalTitle')">
+          {{ i18n.t('settings.model.badgeLocal') }}
+        </span>
+        <span>{{ i18n.t('settings.model.badgeLocalTitle') }}</span>
+      } @else {
+        <span class="badge badge--agent" [title]="i18n.t('settings.model.badgeAgentTitle')">
+          {{ i18n.t('settings.model.badgeAgent') }}
+        </span>
+        <span>{{ i18n.t('settings.model.badgeAgentTitle') }}</span>
+      }
+    } @else if (noModels()) {
+      <span>{{ i18n.t('settings.model.noEngine') }}</span>
+    } @else {
+      <span>{{ i18n.t('settings.model.hint') }}</span>
+    }
+  </div>
+
+  @if (blockedEngine(); as engine) {
+    <p class="model__setup">
+      {{ i18n.t('settings.model.blockedHint', { engine: engine.label }) }}
+      <code class="model__command">{{ i18n.t('settings.model.blockedCommand') }}</code>
+    </p>
+  } @else if (noModels()) {
+    <p class="model__setup">
+      {{ i18n.t('settings.model.setupHint') }}
+      <code class="model__command">{{ i18n.t('settings.model.setupCommand') }}</code>
+    </p>
+  }
+
+  @if (llm.selectedIsAgent()) {
+    <div class="consent" role="group" [attr.aria-labelledby]="consentId + '-title'">
+      <p class="consent__title" [id]="consentId + '-title'">
+        {{ i18n.t('settings.consent.title') }}
+      </p>
+      <p class="consent__text">
+        {{ i18n.t('settings.consent.text', { engine: selectedEngine()?.label ?? '' }) }}
+      </p>
+      <div class="consent__check">
+        <input
+          type="checkbox"
+          [id]="consentId"
+          [checked]="llm.agentConsent()"
+          (change)="onConsent($event)"
+        />
+        <label [for]="consentId">{{ i18n.t('settings.consent.accept') }}</label>
+      </div>
+      <p class="consent__hint">{{ i18n.t('settings.consent.revokeHint') }}</p>
+    </div>
+  }
+
+  @if (llm.detected() && llm.engines().length > 0) {
+    <details class="engines">
+      <summary>{{ i18n.t('settings.engines.summary', { count: llm.engines().length }) }}</summary>
+      <ul class="engines__list">
+        @for (engine of llm.engines(); track engine.id) {
+          <li class="engines__item" [class.engines__item--ready]="engine.status === 'ready'">
+            <span class="engines__name">{{ engine.label }}</span>
+            <span class="engines__status">{{ statusLabel(engine) }}</span>
+          </li>
+        }
+      </ul>
+      @if (llm.backendKind === 'browser') {
+        <p class="engines__note">{{ i18n.t('settings.model.browserOnly') }}</p>
+      }
+    </details>
+  }
+</div>

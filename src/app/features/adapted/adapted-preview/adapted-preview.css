@@ -1,0 +1,123 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.check {
+  margin: 0;
+  padding: var(--space-3);
+  background: var(--color-surface-2);
+  border-left: 3px solid var(--color-warning);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+}
+
+.check--ok {
+  border-left-color: var(--color-success);
+}
+
+.check__title {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-warning);
+}
+
+.check__lead {
+  margin: var(--space-1) 0 0;
+}
+
+.check__terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.check__term {
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-warning);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  overflow-wrap: anywhere;
+}
+
+/* A sheet of paper: the preview reads as the document it will export to. */
+.cv {
+  padding: var(--space-6) var(--space-6);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  overflow-wrap: anywhere;
+}
+
+.cv--live {
+  border-style: dashed;
+}
+
+.cv__name {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
+}
+
+.cv__section {
+  margin: var(--space-5) 0 var(--space-2);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-border-strong);
+  font-size: var(--text-base);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.cv__item {
+  margin: var(--space-3) 0 var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.cv__para {
+  margin: 0 0 var(--space-2);
+}
+
+.cv__list {
+  margin: 0 0 var(--space-2);
+  padding-left: var(--space-5);
+}
+
+.cv__rule {
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.cv__flag {
+  background: transparent;
+  color: inherit;
+  border-bottom: 2px dashed var(--color-warning);
+}
+
+@media (max-width: 40rem) {
+  .cv {
+    padding: var(--space-4);
+  }
+}
+
+@media print {
+  .check {
+    display: none;
+  }
+
+  .cv {
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+}

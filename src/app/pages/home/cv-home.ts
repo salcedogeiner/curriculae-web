@@ -3,19 +3,23 @@ import { I18n } from '../../core/i18n/i18n';
 import { CvImportService } from '../../features/cv/import/cv-import.service';
 import { CvDropzone } from '../../features/cv/dropzone/cv-dropzone';
 import { CvPreview } from '../../features/cv/preview/cv-preview';
+import { GenerationForm } from '../../features/generation/generation-form/generation-form';
+import { GenerationResult } from '../../features/generation/generation-result/generation-result';
+import { GenerationHistory } from '../../features/history/generation-history';
 
 /**
- * Home / step 1: load the base CV.
+ * Home: the whole flow on one page.
  *
  * A page is the composition and routing layer; the pieces it assembles live in
- * `features/cv`. This one stacks intro → preview of the loaded CV → drop zone →
- * loaded file summary, and the drop zone absorbs whatever height is left so it
- * covers the whole half. The second column is intentionally empty for now — the
- * vacancy and the analysis land there in the next steps of the pipeline.
+ * `features/*`. The first screen holds the two inputs side by side — the base
+ * CV on the left (intro → preview → drop zone, the zone absorbing the height
+ * left over), and on the right the vacancy, the model and the button that
+ * generates a new version. The result appears below them once there is one,
+ * and in the desktop app the workspace folder and the history close the page.
  */
 @Component({
   selector: 'app-cv-home',
-  imports: [CvDropzone, CvPreview],
+  imports: [CvDropzone, CvPreview, GenerationForm, GenerationResult, GenerationHistory],
   templateUrl: './cv-home.html',
   styleUrl: './cv-home.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

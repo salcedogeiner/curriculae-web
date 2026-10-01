@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { CvRepository, createStoredCv, type StoredCv } from '../../../core/storage/cv.repository';
 import type { MessageKey } from '../../../core/i18n/messages';
+import { WorkspaceService } from '../../../core/workspace/workspace.service';
 import { MAX_FILE_BYTES, humanFileSize } from '../cv-file';
 import { CvParseError, parseCvFile, type CvParseErrorCode } from './cv-parser';
 
@@ -36,6 +37,7 @@ export class CvImportService {
   readonly maxBytes = MAX_FILE_BYTES;
 
   private readonly repository = inject(CvRepository);
+  private readonly workspace = inject(WorkspaceService);
 
   private readonly _status = signal<CvImportStatus>('idle');
   private readonly _cv = signal<StoredCv | null>(null);
@@ -83,6 +85,10 @@ export class CvImportService {
       this.repository.write(stored);
       this._cv.set(stored);
       this._status.set('ready');
+      // Desktop only: keep the original file in the workspace's CV folder. Not
+      // awaited — the import is done, and a disk error is reported by the
+      // workspace without undoing it.
+      void this.workspace.saveCv(file);
     } catch (error) {
       this._status.set('error');
       this._issue.set(toIssue(error, file));
@@ -111,7 +117,11 @@ function toIssue(error: unknown, file: File): CvImportIssue {
     return {
       code: error.code,
       messageKey: ISSUE_KEYS[error.code],
-      params: { fileName: file.name, size: humanFileSize(file.size), maxSize: humanFileSize(MAX_FILE_BYTES) },
+      params: {
+        fileName: file.name,
+        size: humanFileSize(file.size),
+        maxSize: humanFileSize(MAX_FILE_BYTES),
+      },
     };
   }
 

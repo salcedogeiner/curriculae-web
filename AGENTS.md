@@ -7,7 +7,8 @@ vacancy demands, compare it against the CV, report the gaps with a match score, 
 produce an adapted CV that can be exported to PDF, DOCX or Markdown.
 
 **Everything runs on the user's machine.** There is no backend, no account, no
-telemetry and no API key. The résumé never leaves the device unless the user
+telemetry and no API key. It ships as a **desktop app (Electron)** — the primary
+target — and still runs as a plain web page under `ng serve`. The résumé never leaves the device unless the user
 explicitly opts into a cloud-backed agent engine (see §5 and the `llm-integration`
 skill).
 
@@ -26,12 +27,17 @@ npm start                    # ng serve → http://localhost:4200
 npm run build                # production build → dist/curriculae-web
 npm test                     # vitest (jsdom)
 npm run watch                # dev build, --watch
+npm run desktop              # production build + Electron window
+npm run desktop:dev          # ng serve + Electron on it (live reload)
+npm run test:desktop         # vitest for electron/ (Node environment)
+npm run typecheck:desktop    # tsc --checkJs over electron/ against desktop-api.ts
 ```
 
 > **Not wired yet:** `presenteur`, the sibling project, uses a single
 > `npm run check` gate (`format → lint → typecheck → test → build`) with ESLint and
 > Prettier. That gate is the target for this repo but **does not exist yet** — until
-> it lands, run `npm run build && npm test` before finishing any change.
+> it lands, run `npm run build && npm test && npm run test:desktop && npm run
+> typecheck:desktop` before finishing any change.
 
 - Node **24.21.0**, npm **11.19.0** (pinned via `packageManager`).
 - Angular 22 renamed a lot of the last-3-years muscle memory. The app uses the
@@ -85,48 +91,70 @@ npm run watch                # dev build, --watch
 AGENTS.md                    ← this file: the mental model and the rules
 .agents/skills/              ← portable playbooks (<id>/SKILL.md, optional
 │                                references/). Load the relevant one, §6.
+electron/                    the desktop shell (plain ESM + JSDoc, @ts-check)
+  main.mjs                   window, app:// protocol, IPC handlers, hardening
+  preload.cjs                exposes exactly DesktopApi as window.curriculae
+  app-protocol.mjs           serves dist/ from app://curriculae with a strict CSP
+  workspace.mjs              the on-disk workspace (hojas-de-vida/, ofertas/)
+  config.mjs                 userData/config.json (workspace location)
+  engines/                   engine registry: Ollama, llama.cpp, LM Studio over
+                             HTTP; claude and opencode CLIs as subprocesses
+  launch.mjs                 npm run desktop / desktop:dev; sandbox detection
+  *.test.mjs                 vitest, Node environment (npm run test:desktop)
 src/
   main.ts                    bootstrapApplication(App, appConfig)
   index.html                 <app-root>, lang="es"
   styles.css                 global styles + design tokens (light/dark)
+  testing/fake-llm.ts        test doubles for the model layer (specs only)
   app/
     app.ts / app.html / app.css   shell: skip link, site title, <router-outlet>
-    app.config.ts            providers: provideBrowserGlobalErrorListeners, provideRouter
     app.routes.ts            home route → pages/home (lazy)
-    app.spec.ts              4 passing smoke tests
     core/
-      i18n/                  messages.ts (Spanish catalogue) + i18n.ts + its spec
-      storage/               cv.repository.ts — versioned localStorage
-      text/                  cv-text.ts — CV text normalisation, shared by the
-                             import pipeline and the storage validator
+      desktop/               desktop-api.ts — THE IPC contract, typed once;
+                             desktop-bridge.ts — DESKTOP_API token (null in browser)
+      llm/                   the only place that talks to a model (§5)
+        engine.types.ts      tiers, engines, models, requests, LlmError codes
+        llm.service.ts       facade: detect(), select(), consent gate, complete()
+        llm-backend.ts       LLM_BACKEND token: desktop (IPC) or browser (fetch)
+        browser/             Ollama + OpenAI-compatible adapters over fetch
+        desktop/             IPC backend: chunks, abort, error codes
+        json-response.ts     defensive JSON extraction from model answers
+      i18n/                  messages.ts (Spanish catalogue) + i18n.ts
+      storage/               cv.repository.ts; preferences.repository.ts (model,
+                             agent consent, vacancy draft) on versioned-store.ts
+      text/                  cv-text.ts, markdown-blocks.ts (safe MD → data),
+                             fold.ts (comparison form), prompt-data.ts (tagging)
+      workspace/             workspace.service.ts — desktop folder ops as signals
     features/
-      cv/                    step 1, one folder per piece of the flow
-        cv-file.ts           accepted formats, validation, size limit; shared
-        dropzone/            cv-dropzone.* — drag & drop, built on a real
-                             <input type="file">
-        preview/             cv-preview.* — read-only preview of the text
-        import/              cv-import.service.* — validate → parse → normalise
-                             → persist, as signals
-                             cv-parser.* — lazy pdfjs-dist / mammoth extraction
-    pages/                  the routed pages: composition only, no logic of
-                             their own; they assemble features
-      home/                 cv-home.* — the only page so far (its empty right
-                             column is the next step)
+      cv/                    step 1: dropzone, preview, import pipeline
+      vacancy/               vacancy.service.ts — the pasted text, persisted draft
+      settings/model-selector/   detected models, privacy badge, agent consent
+      analysis/              JSON contract + validator, prompt, report component
+      adapted/               adaptation prompt, fact-check (no invented facts),
+                             preview component, export (PDF/DOCX/MD) + actions
+      generation/            orchestrator service, the right-column form, the
+                             result section
+      history/               desktop: workspace folders and past generations
+    pages/
+      home/                  cv-home.* — composition only: CV left, generation
+                             form right, result and history below
 angular.json  package.json  tsconfig*.json  .prettierrc  .editorconfig
-.vscode/                     launch, tasks, extensions
 ```
 
-Runtime dependencies added so far: `pdfjs-dist` (PDF text) and `mammoth`
-(DOCX text), both `import()`ed on demand so they stay out of the `initial`
+Runtime dependencies: `pdfjs-dist` (PDF text), `mammoth` (DOCX text) and `docx`
+(DOCX export), all `import()`ed on demand so they stay out of the `initial`
 bundle. `pdfjs-dist` is pinned to 5.7.x on purpose — 6.x requires
-`Uint8Array.prototype.toHex`, a 2025 platform feature; see the comment in
-`cv-parser.ts`. `marked`, `jspdf` and `docx` are still unused.
+`Uint8Array.prototype.toHex`; see the comment in `cv-parser.ts`. `electron` is a
+devDependency: it is the shell, not part of the web bundle. `marked` and `jspdf`
+are approved but unused: Markdown is parsed by `core/text/markdown-blocks.ts`
+(data, never HTML), and the PDF is rendered by Electron's `printToPDF` (desktop)
+or the print dialog (browser) from the same escaped HTML.
 
 ## 3. Target architecture
 
-Built so far: `core/i18n`, `core/storage`, `core/text` and `features/cv` (step
-1), with its one page in `pages/home`. The rest lands as the features arrive, in
-this order.
+All five steps of §4 are built (see §2). This is the shape to keep; it now also
+includes `core/desktop`, `core/workspace`, `features/generation` (the
+orchestrator and the right-column form) and `features/history` (desktop only).
 
 ```
 src/app/
@@ -199,6 +227,13 @@ Two tiers, and the difference is a privacy promise, not an implementation detail
   found" with a setup hint, never a crash or a permanent spinner.
 - **CORS is the #1 local-mode bug** and it is invisible in the UI: the app on
   `localhost:4200` needs `OLLAMA_ORIGINS` on Ollama and `--cors` on `opencode serve`.
+- **In the desktop app the main process makes every model call** (no CORS, and
+  the CLI agents are reachable). It only runs models its own last detection
+  found, at the location that detection recorded — the renderer can never name a
+  binary or a URL. `claude` is verified (`-p --output-format stream-json`);
+  `opencode run` is implemented from its `--help` only; Codex has no adapter.
+- Two backends, one facade: `LLM_BACKEND` picks IPC (desktop) or `fetch`
+  (browser). Features only ever see `LlmService`.
 
 → **Load the `llm-integration` skill** before touching `core/llm`. It holds the
 verified endpoint table, the adapter contract, streaming/abort rules, JSON discipline
@@ -297,6 +332,25 @@ Pre-formatted strings (`humanFileSize`, format lists) pass through untouched.
   vacancy text, and escape it in the exported PDF/DOCX.
 - The stored CV may be from an older schema version. `storage/` must detect the
   version and migrate or discard — never throw on read.
+- **Electron**: the renderer is sandboxed, context-isolated, and served from
+  `app://curriculae` with a CSP whose inline-script hash is computed from the
+  built `index.html` at startup. Every IPC channel checks the sender origin.
+  Changing the IPC surface means changing `core/desktop/desktop-api.ts` first;
+  `npm run typecheck:desktop` then shows which side is out of date.
+- On Ubuntu 23.10+ Electron aborts unless `chrome-sandbox` is root-owned 4755;
+  `electron/launch.mjs` detects it, falls back to `--no-sandbox` and prints the
+  fix. Do not hardcode `--no-sandbox` anywhere else.
+- The workspace (`~/Documentos/Curriculae` by default) is the user's own folder:
+  the renderer refers to a generation by its folder id, and `workspace.mjs`
+  validates every id and file name. Never accept a path from the renderer.
+- qwen3.5 with `think: false` either copies the CV untouched or moves
+  achievements between jobs when asked to rewrite. The adaptation call sets
+  `reason: true` (≈1 min on a laptop); analysis keeps it off and uses Ollama's
+  `format` with the JSON schema instead.
+- The adaptation prompt receives verified evidence quotes, never the
+  requirement texts: a requirement is phrased by the vacancy, and a small model
+  told to "highlight" it copies it in. `fact-check.spec.ts` holds the real
+  regression fixture.
 
 ---
 
@@ -312,6 +366,9 @@ Anything not on this list needs approval first (§1.5).
 | `marked`     | Render/parse Markdown input and Markdown export. |
 | `jspdf`      | Export the adapted CV to PDF.                    |
 | `docx`       | Export the adapted CV to editable DOCX.          |
+
+Development dependencies beyond the Angular CLI defaults: `electron` (the
+desktop shell, requested by the product owner).
 
 Notes: `pdfjs-dist` needs its worker wired for the bundler — prefer
 `pdfjs-dist/build/pdf.worker.min.mjs` via `GlobalWorkerOptions.workerSrc`, and watch

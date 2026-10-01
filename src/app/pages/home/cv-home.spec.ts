@@ -2,11 +2,16 @@ import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { CvHome } from './cv-home';
 import { CvImportService } from '../../features/cv/import/cv-import.service';
+import { LLM_BACKEND } from '../../core/llm/llm-backend';
+import { FakeLlmBackend } from '../../../testing/fake-llm';
+
+// Never probe the engines actually running on the machine from a unit test.
+const providers = [{ provide: LLM_BACKEND, useFactory: () => new FakeLlmBackend() }];
 
 describe('CvHome', () => {
   beforeEach(async () => {
     localStorage.clear();
-    await TestBed.configureTestingModule({ imports: [CvHome] }).compileComponents();
+    await TestBed.configureTestingModule({ imports: [CvHome], providers }).compileComponents();
   });
 
   it('muestra el area de arrastrar en la mitad izquierda', async () => {
@@ -40,7 +45,7 @@ describe('CvHome', () => {
     await previous.import(new File(['# Perfil'], 'cv.md', { type: 'text/markdown' }));
 
     TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({ imports: [CvHome] }).compileComponents();
+    await TestBed.configureTestingModule({ imports: [CvHome], providers }).compileComponents();
     const fixture = TestBed.createComponent(CvHome);
     await fixture.whenStable();
 
@@ -67,7 +72,10 @@ describe('CvHome', () => {
 
     for (let i = 0; i < nodes.length - 1; i++) {
       const follows = nodes[i]!.compareDocumentPosition(nodes[i + 1]!);
-      expect(follows & Node.DOCUMENT_POSITION_FOLLOWING, `nodo ${i} antes que ${i + 1}`).toBeTruthy();
+      expect(
+        follows & Node.DOCUMENT_POSITION_FOLLOWING,
+        `nodo ${i} antes que ${i + 1}`,
+      ).toBeTruthy();
     }
   });
 
@@ -81,6 +89,31 @@ describe('CvHome', () => {
 
     expect(compiled.querySelector('.preview__text')?.textContent).toBe('<b>Ana</b>');
     expect(compiled.querySelector('app-cv-preview b')).toBeNull();
+  });
+
+  it('pone el formulario de la oferta en la mitad derecha, con su h2', async () => {
+    const fixture = TestBed.createComponent(CvHome);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const [left, right] = compiled.querySelectorAll('.home__column');
+
+    expect(left.querySelector('app-cv-dropzone')).not.toBeNull();
+    expect(right.querySelector('app-generation-form')).not.toBeNull();
+    expect(right.getAttribute('aria-labelledby')).toBe('vacancy-step-title');
+    expect(right.querySelector('#vacancy-step-title')?.tagName).toBe('H2');
+  });
+
+  it('el resultado y el historial van después de los dos pasos', async () => {
+    const fixture = TestBed.createComponent(CvHome);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    const steps = compiled.querySelector('.home__steps')!;
+    const result = compiled.querySelector('app-generation-result')!;
+    expect(steps.compareDocumentPosition(result) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // No result yet, and no workspace in the browser: both render nothing.
+    expect(result.textContent?.trim()).toBe('');
+    expect(compiled.querySelector('app-generation-history')?.textContent?.trim()).toBe('');
   });
 
   it('no muestra la vista previa cuando todavía no hay archivo', async () => {

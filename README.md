@@ -1,59 +1,76 @@
-# CurriculaeWeb
+# Curriculae
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.0.
+Adapta tu hoja de vida a una oferta de empleo con un modelo de IA que se ejecuta
+en tu propio equipo. Sin servidor, sin cuenta, sin telemetría.
 
-## Development server
+1. **Carga tu hoja de vida** (PDF, DOCX, Markdown o TXT).
+2. **Pega la oferta**, elige el modelo (detectado en tu equipo) y pulsa
+   **Generar nueva versión de la hoja de vida**.
+3. **Revisa el resultado**: compatibilidad, brechas, la hoja de vida adaptada con
+   los datos no verificados marcados, y expórtala a PDF, Word o Markdown.
 
-To start a local development server, run:
+La versión adaptada nunca debe inventar: la app compara cada nombre, tecnología,
+cifra y palabra tomada de la oferta con tu hoja de vida original y marca lo que
+no encuentra antes de que lo envíes.
 
-```bash
-ng serve
-```
+## Requisitos
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Node 24.21 y npm 11.19.
+- Al menos un motor de IA:
+  - **Local** (recomendado, tu hoja de vida no sale del equipo):
+    [Ollama](https://ollama.com) (`ollama pull qwen3.5`), llama.cpp (`:8080`) o
+    LM Studio (`:1234`).
+  - **Agente** (puede enviar tus datos a la nube; la app pide permiso explícito):
+    la CLI de `claude` u `opencode`. Solo en la app de escritorio.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## App de escritorio (Electron)
 
 ```bash
-ng build
+npm install
+npm run desktop        # build de producción + ventana de escritorio
+npm run desktop:dev    # ng serve + Electron con recarga en vivo
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+La app de escritorio detecta los motores locales y los agentes CLI instalados,
+y mantiene una carpeta de trabajo (por defecto `~/Documentos/Curriculae`,
+configurable desde la propia app):
 
-## Running unit tests
+```
+Curriculae/
+  hojas-de-vida/                     cada hoja de vida que cargas, tal cual
+  ofertas/
+    2026-10-01_0930-puesto-empresa/  una carpeta por versión generada
+      oferta.txt                     la oferta que pegaste
+      hoja-de-vida-adaptada.md       la hoja de vida generada
+      analisis.json                  compatibilidad, requisitos, modelo usado
+      *.pdf / *.docx / *.md          lo que exportes
+```
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+**Linux (Ubuntu 23.10+):** si el sistema restringe los *user namespaces*, el
+sandbox de Chromium necesita un ajuste de una sola vez; mientras tanto el
+lanzador arranca con `--no-sandbox` y te muestra el comando:
 
 ```bash
-ng test
+sudo chown root:root node_modules/electron/dist/chrome-sandbox
+sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## En el navegador
 
 ```bash
-ng e2e
+npm start              # http://localhost:4200
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Solo detecta motores locales, y Ollama tiene que aceptar el origen:
+`OLLAMA_ORIGINS=http://localhost:4200 ollama serve`. Las exportaciones se
+descargan en lugar de guardarse en la carpeta de trabajo.
 
-## Additional Resources
+## Desarrollo
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+npm run build && npm test          # app Angular (Vitest + jsdom)
+npm run test:desktop               # proceso principal de Electron (Vitest, Node)
+npm run typecheck:desktop          # tipos del JS de Electron contra desktop-api.ts
+```
+
+Las reglas del proyecto están en [AGENTS.md](AGENTS.md).

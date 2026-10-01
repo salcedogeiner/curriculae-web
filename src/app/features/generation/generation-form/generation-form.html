@@ -1,0 +1,86 @@
+<form class="gen" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <div class="gen__intro">
+    <h2 class="gen__title" id="vacancy-step-title">{{ i18n.t('vacancy.stepTitle') }}</h2>
+    <p class="gen__lead">{{ i18n.t('vacancy.stepLead') }}</p>
+  </div>
+
+  <div class="gen__field">
+    <div class="gen__field-head">
+      <label class="gen__label" for="vacancy-text">{{ i18n.t('vacancy.label') }}</label>
+      @if (vacancy.charCount() > 0 && !generation.busy()) {
+        <button type="button" class="gen__clear" (click)="clear()">
+          {{ i18n.t('vacancy.clear') }}
+        </button>
+      }
+    </div>
+    <textarea
+      id="vacancy-text"
+      class="gen__textarea"
+      formControlName="vacancy"
+      [placeholder]="i18n.t('vacancy.placeholder')"
+      [readOnly]="generation.busy()"
+      [attr.aria-invalid]="vacancyError() !== null"
+      aria-describedby="vacancy-count vacancy-error"
+      rows="8"
+    ></textarea>
+    <p class="gen__count" id="vacancy-count">
+      {{ i18n.t('vacancy.charCount', { chars: vacancy.charCount(), max: maxChars }) }}
+    </p>
+    <p class="gen__field-error" id="vacancy-error">{{ vacancyError() }}</p>
+  </div>
+
+  <app-model-selector />
+
+  <div class="gen__actions">
+    @if (generation.busy()) {
+      <div class="gen__progress">
+        <span class="gen__spinner" aria-hidden="true"></span>
+        <div class="gen__progress-text">
+          <p class="gen__phase">{{ phaseLabel() }}</p>
+          <!-- Not live: a counter that changes per token would flood a screen reader. -->
+          <p class="gen__received">
+            @if (generation.thinking()) {
+              {{ i18n.t('generation.phase.thinking') }}
+            } @else {
+              {{ i18n.t('generation.phase.received', { chars: generation.receivedChars() }) }}
+            }
+          </p>
+        </div>
+        <button type="button" class="gen__cancel" (click)="cancel()">
+          {{ i18n.t('generation.cancel') }}
+        </button>
+      </div>
+    } @else {
+      <button
+        type="submit"
+        class="gen__submit"
+        [attr.aria-disabled]="blockReason() !== null"
+        aria-describedby="generation-reason"
+      >
+        {{ i18n.t('generation.submit') }}
+      </button>
+      <p class="gen__reason" id="generation-reason">
+        {{ blockReason() ?? i18n.t('generation.slowHint') }}
+      </p>
+    }
+
+    @if (issueMessage(); as message) {
+      <div
+        class="gen__issue"
+        [class.gen__issue--soft]="generation.issue()?.code === 'aborted'"
+        role="alert"
+      >
+        <p class="gen__issue-text">{{ message }}</p>
+        @if (generation.issue()?.code !== 'aborted' && blockReason() === null) {
+          <button type="submit" class="gen__issue-action">{{ i18n.t('generation.retry') }}</button>
+        }
+        <button type="button" class="gen__issue-action" (click)="generation.dismissIssue()">
+          {{ i18n.t('generation.dismiss') }}
+        </button>
+      </div>
+    }
+
+    <!-- Present from the start so that phase changes are actually announced. -->
+    <p class="visually-hidden" aria-live="polite">{{ phaseLabel() }}</p>
+  </div>
+</form>

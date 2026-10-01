@@ -1,14 +1,27 @@
 <div class="home">
-  <section class="home__column" aria-labelledby="cv-step-title">
-    <div class="home__intro">
-      <h2 class="home__title" id="cv-step-title">{{ i18n.t('cv.stepTitle') }}</h2>
-      <p class="home__lead">{{ i18n.t('cv.stepLead') }}</p>
-    </div>
+  <div class="home__steps">
+    <section class="home__column" aria-labelledby="cv-step-title">
+      <div class="home__intro">
+        <h2 class="home__title" id="cv-step-title">{{ i18n.t('cv.stepTitle') }}</h2>
+        <p class="home__lead">{{ i18n.t('cv.stepLead') }}</p>
+      </div>
 
-    @if (cv(); as loaded) {
-      <app-cv-preview [text]="loaded.text" [charCount]="loaded.charCount" [fileName]="loaded.fileName" />
-    }
+      @if (cv(); as loaded) {
+        <app-cv-preview
+          [text]="loaded.text"
+          [charCount]="loaded.charCount"
+          [fileName]="loaded.fileName"
+        />
+      }
 
-    <app-cv-dropzone />
-  </section>
+      <app-cv-dropzone />
+    </section>
+
+    <section class="home__column" aria-labelledby="vacancy-step-title">
+      <app-generation-form />
+    </section>
+  </div>
+
+  <app-generation-result />
+  <app-generation-history />
 </div>
