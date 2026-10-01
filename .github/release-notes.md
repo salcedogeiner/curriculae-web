@@ -3,6 +3,8 @@ en tu propio equipo. Necesitas al menos un motor: [Ollama](https://ollama.com)
 (`ollama pull qwen3.5`), llama.cpp o LM Studio; opcionalmente las CLI `claude` u
 `opencode` (agentes en la nube, con permiso explícito).
 
+Más información en [curriculae.inaxis.cc](https://curriculae.inaxis.cc/).
+
 ## Descargas
 
 | Sistema | Archivo |

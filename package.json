@@ -8,7 +8,15 @@
     "name": "salcedogeiner",
     "email": "geiner.salcedo.ppc0111@gmail.com"
   },
-  "homepage": "https://github.com/salcedogeiner/curriculae-web",
+  "license": "MIT",
+  "homepage": "https://curriculae.inaxis.cc/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salcedogeiner/curriculae-web.git"
+  },
+  "bugs": {
+    "url": "https://github.com/salcedogeiner/curriculae-web/issues"
+  },
   "main": "electron/main.mjs",
   "scripts": {
     "ng": "ng",

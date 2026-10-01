@@ -94,6 +94,7 @@ falls under §1.1 — only when the user asks for a release.
 
 ```
 AGENTS.md                    ← this file: the mental model and the rules
+LICENSE                      MIT. Landing page: https://curriculae.inaxis.cc/
 .agents/skills/              ← portable playbooks (<id>/SKILL.md, optional
 │                                references/). Load the relevant one, §6.
 electron/                    the desktop shell (plain ESM + JSDoc, @ts-check)

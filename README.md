@@ -3,6 +3,9 @@
 Adapta tu hoja de vida a una oferta de empleo con un modelo de IA que se ejecuta
 en tu propio equipo. Sin servidor, sin cuenta, sin telemetría.
 
+**Sitio web:** [curriculae.inaxis.cc](https://curriculae.inaxis.cc/) ·
+**Descargas:** [Releases](https://github.com/salcedogeiner/curriculae-web/releases/latest)
+
 1. **Carga tu hoja de vida** (PDF, DOCX, Markdown o TXT).
 2. **Pega la oferta**, elige el modelo (detectado en tu equipo) y pulsa
    **Generar nueva versión de la hoja de vida**.
@@ -91,3 +94,15 @@ npm run typecheck:desktop          # tipos del JS de Electron contra desktop-api
 ```
 
 Las reglas del proyecto están en [AGENTS.md](AGENTS.md).
+
+## Contribuir
+
+Los reportes de errores y las propuestas van en
+[Issues](https://github.com/salcedogeiner/curriculae-web/issues). Antes de abrir
+un pull request, lee [AGENTS.md](AGENTS.md) y pasa el gate de la sección
+*Desarrollo*. Nunca adjuntes una hoja de vida real en un issue: usa datos de
+ejemplo.
+
+## Licencia
+
+[MIT](LICENSE) © 2026 salcedogeiner
