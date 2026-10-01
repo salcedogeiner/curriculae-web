@@ -82,7 +82,7 @@
       ],
       "category": "Office",
       "synopsis": "Adapta tu hoja de vida a una oferta con IA local",
-      "icon": "build/icon.png",
+      "icon": "build/icons",
       "executableName": "curriculae",
       "syncDesktopName": true
     },
@@ -91,7 +91,7 @@
         "nsis",
         "portable"
       ],
-      "icon": "build/icon.png"
+      "icon": "public/icon.png"
     },
     "nsis": {
       "oneClick": false,
@@ -119,7 +119,7 @@
       ],
       "category": "public.app-category.productivity",
       "identity": null,
-      "icon": "build/icon.png"
+      "icon": "public/icon.png"
     }
   }
 }

@@ -41,6 +41,11 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const DIST_DIR = path.resolve(here, '..', 'dist', 'curriculae-web', 'browser');
 const DEV_URL = process.env['CURRICULAE_DEV_URL'] ?? null;
 const PRELOAD = path.join(here, 'preload.cjs');
+// Window and taskbar icon on Linux and Windows (macOS takes it from the bundle).
+// public/ is copied into the build; under desktop:dev there may be no build yet.
+const WINDOW_ICON = DEV_URL
+  ? path.resolve(here, '..', 'public', 'icon.png')
+  : path.join(DIST_DIR, 'icon.png');
 
 app.setName('Curriculae');
 
@@ -237,6 +242,7 @@ async function createWindow() {
     minWidth: 900,
     minHeight: 640,
     title: 'Curriculae',
+    icon: WINDOW_ICON,
     show: false,
     autoHideMenuBar: true,
     // Matches --color-bg so the first frame does not flash the wrong theme.

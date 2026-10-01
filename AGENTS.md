@@ -106,7 +106,12 @@ electron/                    the desktop shell (plain ESM + JSDoc, @ts-check)
   engines/                   engine registry: Ollama, llama.cpp, LM Studio over
                              HTTP; claude and opencode CLIs as subprocesses
   launch.mjs                 npm run desktop / desktop:dev; sandbox detection
-build/icon.png               app icon (electron-builder derives .ico/.icns)
+public/icon.png              the app icon (1024 px): favicon, window, Windows and
+                             macOS installers (electron-builder derives .ico/.icns)
+build/icons/NxN.png          the same icon resized for Linux: the hicolor theme
+                             stops at 512 px, so a lone 1024 px PNG is never found
+                             and GNOME shows a generic icon. Regenerate them
+                             whenever public/icon.png changes.
 .github/workflows/release.yml   v* tag → executables for Windows, macOS, Linux
   *.test.mjs                 vitest, Node environment (npm run test:desktop)
 src/
