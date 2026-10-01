@@ -55,6 +55,23 @@ sudo chown root:root node_modules/electron/dist/chrome-sandbox
 sudo chmod 4755 node_modules/electron/dist/chrome-sandbox
 ```
 
+## Ejecutables y releases
+
+```bash
+npm run dist           # empaqueta para el sistema actual en release/
+```
+
+Los ejecutables de Windows, macOS y Linux se publican solos: al empujar un tag
+`vX.Y.Z`, el workflow `.github/workflows/release.yml` pasa el gate de calidad,
+construye en un runner de cada sistema (macOS solo puede construirse en macOS)
+y crea el release con los instaladores y las notas de
+`.github/release-notes.md`.
+
+```bash
+npm version 0.2.0 --no-git-tag-version   # sube la versión en package.json
+git commit -am "chore: release 0.2.0" && git tag v0.2.0 && git push --follow-tags
+```
+
 ## En el navegador
 
 ```bash

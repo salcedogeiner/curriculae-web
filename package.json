@@ -1,7 +1,14 @@
 {
   "name": "curriculae-web",
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "productName": "Curriculae",
+  "desktopName": "curriculae.desktop",
   "description": "Adapta tu hoja de vida a una vacante con un modelo de IA local.",
+  "author": {
+    "name": "salcedogeiner",
+    "email": "geiner.salcedo.ppc0111@gmail.com"
+  },
+  "homepage": "https://github.com/salcedogeiner/curriculae-web",
   "main": "electron/main.mjs",
   "scripts": {
     "ng": "ng",
@@ -12,7 +19,8 @@
     "test:desktop": "vitest run --config electron/vitest.config.mjs",
     "typecheck:desktop": "tsc -p electron/tsconfig.json",
     "desktop": "ng build && node electron/launch.mjs",
-    "desktop:dev": "node electron/launch.mjs --dev"
+    "desktop:dev": "node electron/launch.mjs --dev",
+    "dist": "ng build && electron-builder"
   },
   "private": true,
   "packageManager": "npm@11.19.0",
@@ -34,9 +42,76 @@
     "@angular/cli": "^22.2.0",
     "@angular/compiler-cli": "^22.2.0",
     "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
     "jsdom": "^30.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",
     "vitest": "^5.0.0"
+  },
+  "build": {
+    "appId": "com.salcedogeiner.curriculae",
+    "productName": "Curriculae",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "package.json",
+      "electron/**/*",
+      "!electron/**/*.test.mjs",
+      "!electron/vitest.config.mjs",
+      "!electron/tsconfig.json",
+      "!electron/launch.mjs",
+      "dist/curriculae-web/browser/**/*",
+      "!node_modules/**/*"
+    ],
+    "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+    "publish": null,
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Office",
+      "synopsis": "Adapta tu hoja de vida a una oferta con IA local",
+      "icon": "build/icon.png",
+      "executableName": "curriculae",
+      "syncDesktopName": true
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-win-portable.${ext}"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.productivity",
+      "identity": null,
+      "icon": "build/icon.png"
+    }
   }
 }

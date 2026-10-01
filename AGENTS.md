@@ -31,7 +31,12 @@ npm run desktop              # production build + Electron window
 npm run desktop:dev          # ng serve + Electron on it (live reload)
 npm run test:desktop         # vitest for electron/ (Node environment)
 npm run typecheck:desktop    # tsc --checkJs over electron/ against desktop-api.ts
+npm run dist                 # package for the current OS into release/
 ```
+
+Releases: pushing a `v*` tag runs `.github/workflows/release.yml` (gate → one
+build per OS → GitHub Release with the installers). Tagging is publishing: it
+falls under §1.1 — only when the user asks for a release.
 
 > **Not wired yet:** `presenteur`, the sibling project, uses a single
 > `npm run check` gate (`format → lint → typecheck → test → build`) with ESLint and
@@ -100,6 +105,8 @@ electron/                    the desktop shell (plain ESM + JSDoc, @ts-check)
   engines/                   engine registry: Ollama, llama.cpp, LM Studio over
                              HTTP; claude and opencode CLIs as subprocesses
   launch.mjs                 npm run desktop / desktop:dev; sandbox detection
+build/icon.png               app icon (electron-builder derives .ico/.icns)
+.github/workflows/release.yml   v* tag → executables for Windows, macOS, Linux
   *.test.mjs                 vitest, Node environment (npm run test:desktop)
 src/
   main.ts                    bootstrapApplication(App, appConfig)
@@ -368,7 +375,9 @@ Anything not on this list needs approval first (§1.5).
 | `docx`       | Export the adapted CV to editable DOCX.          |
 
 Development dependencies beyond the Angular CLI defaults: `electron` (the
-desktop shell, requested by the product owner).
+desktop shell) and `electron-builder` (installers for the release), both
+requested by the product owner. Packaging ships only `electron/` and the
+Angular build — never `node_modules` (see `build.files` in package.json).
 
 Notes: `pdfjs-dist` needs its worker wired for the bundler — prefer
 `pdfjs-dist/build/pdf.worker.min.mjs` via `GlobalWorkerOptions.workerSrc`, and watch
