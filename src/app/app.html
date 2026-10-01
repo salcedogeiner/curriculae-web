@@ -2,7 +2,11 @@
 
 <header class="app-header">
   <div class="app-header__inner">
-    <h1 class="app-header__title">{{ i18n.t('app.title') }}</h1>
+    <h1 class="app-header__title">
+      <!-- Decorative: the heading text already names the app. -->
+      <img class="app-header__logo" src="icon-192.png" alt="" width="40" height="40" />
+      {{ i18n.t('app.title') }}
+    </h1>
     <p class="app-header__tagline">{{ i18n.t('app.tagline') }}</p>
   </div>
 </header>
