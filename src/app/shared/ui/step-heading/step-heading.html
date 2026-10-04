@@ -1,0 +1,12 @@
+<div class="step">
+  <span class="step__number" aria-hidden="true">{{ step() }}</span>
+  <div class="step__text">
+    <h2 class="step__title" tabindex="-1" [id]="headingId()" #heading>
+      <span class="visually-hidden">{{ i18n.t('app.stepLabel', { n: step() }) }}</span>
+      {{ title() }}
+    </h2>
+    @if (lead(); as text) {
+      <p class="step__lead">{{ text }}</p>
+    }
+  </div>
+</div>

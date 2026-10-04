@@ -1,6 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { I18n } from '../../../core/i18n/i18n';
-import type { Analysis, RequirementImportance, RequirementVerdict } from '../analysis.contract';
+import {
+  scoreLevel,
+  type Analysis,
+  type RequirementImportance,
+  type RequirementVerdict,
+} from '../analysis.contract';
 
 const IMPORTANCE_ORDER: Readonly<Record<RequirementImportance, number>> = {
   must: 0,
@@ -31,10 +36,7 @@ export class AnalysisReport {
     ),
   );
 
-  protected readonly scoreLevel = computed(() => {
-    const score = this.analysis().score;
-    return score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low';
-  });
+  protected readonly scoreLevel = computed(() => scoreLevel(this.analysis().score));
 
   protected verdictLabel(verdict: RequirementVerdict): string {
     return this.i18n.t(`analysis.verdict.${verdict}`);

@@ -106,6 +106,13 @@ export function computeScore(requirements: readonly Requirement[]): number {
   return possible === 0 ? 0 : Math.max(0, Math.min(100, Math.round((earned / possible) * 100)));
 }
 
+export type ScoreLevel = 'high' | 'medium' | 'low';
+
+/** The band a score falls in: the report and the history colour it the same way. */
+export function scoreLevel(score: number): ScoreLevel {
+  return score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low';
+}
+
 /**
  * Validates and normalises the parsed model answer. Throws `malformed-json`
  * only when nothing usable is left; a single bad requirement is dropped, not

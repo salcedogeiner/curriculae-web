@@ -62,7 +62,7 @@
       <path d="M12 7.5v5.5M12 16.2v.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
     </svg>
     <p class="dropzone-error__text">{{ error }}</p>
-    <button type="button" class="dropzone-error__retry" (click)="onRetry()">
+    <button type="button" class="btn dropzone-error__retry" (click)="onRetry()">
       {{ i18n.t('cv.dropzone.change') }}
     </button>
   </div>
@@ -81,7 +81,7 @@
       />
     </svg>
     <span class="dropzone__file-text">{{ loaded }}</span>
-    <button type="button" class="dropzone__file-change" (click)="openPicker()">
+    <button type="button" class="btn dropzone__file-change" (click)="openPicker()">
       {{ i18n.t('cv.dropzone.change') }}
     </button>
   </p>

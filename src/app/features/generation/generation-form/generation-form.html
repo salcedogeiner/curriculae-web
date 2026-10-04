@@ -1,8 +1,10 @@
 <form class="gen" [formGroup]="form" (ngSubmit)="submit()" novalidate>
-  <div class="gen__intro">
-    <h2 class="gen__title" id="vacancy-step-title">{{ i18n.t('vacancy.stepTitle') }}</h2>
-    <p class="gen__lead">{{ i18n.t('vacancy.stepLead') }}</p>
-  </div>
+  <app-step-heading
+    [step]="2"
+    [title]="i18n.t('vacancy.stepTitle')"
+    [lead]="i18n.t('vacancy.stepLead')"
+    headingId="vacancy-step-title"
+  />
 
   <div class="gen__field">
     <div class="gen__field-head">

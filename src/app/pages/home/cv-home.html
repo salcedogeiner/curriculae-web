@@ -1,10 +1,13 @@
 <div class="home">
   <div class="home__steps">
     <section class="home__column" aria-labelledby="cv-step-title">
-      <div class="home__intro">
-        <h2 class="home__title" id="cv-step-title">{{ i18n.t('cv.stepTitle') }}</h2>
-        <p class="home__lead">{{ i18n.t('cv.stepLead') }}</p>
-      </div>
+      <app-step-heading
+        class="home__title"
+        [step]="1"
+        [title]="i18n.t('cv.stepTitle')"
+        [lead]="i18n.t('cv.stepLead')"
+        headingId="cv-step-title"
+      />
 
       @if (cv(); as loaded) {
         <app-cv-preview
@@ -23,5 +26,4 @@
   </div>
 
   <app-generation-result />
-  <app-generation-history />
 </div>

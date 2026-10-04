@@ -1,8 +1,9 @@
 :host {
-  /* A column, so that when the parent shrinks this component the scrollable
-     body is what gives up height — a block child would size to its content and
-     overflow instead. */
+  /* A column that takes the height the step has left over (the drop zone
+     shrinks to a strip once a CV is loaded); the scrollable body is what grows
+     or gives up height — a block child would size to its content instead. */
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
@@ -33,14 +34,11 @@
 }
 
 .preview__body {
-  /* min-height: 0 is what allows this scroll box to shrink below its content;
-     the default `auto` would keep the full CV height and push the zone away.
-     It has to stay below max-height: a min-height larger than the max wins in
-     CSS, and this box would then never scroll, only grow. */
-  min-height: 0;
-  /* The page grows below the fold now (result, history), so the column no
-     longer caps this box by itself: a long CV must not push the drop zone away. */
-  max-height: var(--preview-max-height);
+  /* A zero basis: the CV text never sets the height, so a long CV cannot make
+     the row taller. The box fills what the step has left and scrolls, and
+     never drops below a readable minimum. */
+  flex: 1 1 0;
+  min-height: var(--preview-min-height);
   overflow: auto;
   /* A long CV line (an email, a URL, a skill list) must not blow out the grid. */
   overflow-wrap: anywhere;

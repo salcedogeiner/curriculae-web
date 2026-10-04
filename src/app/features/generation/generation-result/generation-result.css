@@ -7,8 +7,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  padding-top: var(--space-5);
-  border-top: 1px solid var(--color-border);
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
 }
 
 .result__title {
@@ -16,20 +19,6 @@
   font-size: var(--text-xl);
   line-height: var(--leading-tight);
   scroll-margin-top: var(--space-4);
-}
-
-/* Focused by script only (tabindex=-1) to announce a new result; it is not an
-   interactive control, so it gets no focus ring. */
-.result__title:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-.result__meta {
-  margin: var(--space-1) 0 0;
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
-  overflow-wrap: anywhere;
 }
 
 /* The document takes the larger share; the analysis reads as its margin notes. */
@@ -87,8 +76,11 @@
     display: none;
   }
 
+  /* No card on paper: no fill, no shadow, no rounded frame (styling skill). */
   .result {
     padding: 0;
+    background: none;
     border: 0;
+    box-shadow: none;
   }
 }

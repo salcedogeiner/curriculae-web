@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   computed,
   effect,
   inject,
@@ -9,6 +8,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { I18n } from '../../../core/i18n/i18n';
+import { StepHeading } from '../../../shared/ui/step-heading/step-heading';
 import { AdaptedPreview } from '../../adapted/adapted-preview/adapted-preview';
 import { ExportActions } from '../../adapted/export-actions/export-actions';
 import type { ExportSource } from '../../adapted/export/cv-export.service';
@@ -27,7 +27,7 @@ import { GenerationService, type GenerationResult as Result } from '../generatio
  */
 @Component({
   selector: 'app-generation-result',
-  imports: [AdaptedPreview, AnalysisReport, ExportActions],
+  imports: [AdaptedPreview, AnalysisReport, ExportActions, StepHeading],
   templateUrl: './generation-result.html',
   styleUrl: './generation-result.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,7 +36,7 @@ export class GenerationResult {
   protected readonly i18n = inject(I18n);
   protected readonly generation = inject(GenerationService);
 
-  private readonly heading = viewChild<ElementRef<HTMLElement>>('heading');
+  private readonly heading = viewChild(StepHeading);
 
   protected readonly live = computed(
     () => this.generation.phase() === 'adapting' && this.generation.draft() !== '',
@@ -70,20 +70,19 @@ export class GenerationResult {
     return fileName ? ` · ${this.i18n.t('result.baseCv', { fileName })}` : '';
   });
 
-  private shown: Result | null = this.generation.result();
+  // null, not the current result: a version opened from the start screen
+  // exists before this component does, and it must still be brought into view.
+  private shown: Result | null = null;
 
   constructor() {
     effect(() => {
       const result = this.generation.result();
-      const heading = this.heading()?.nativeElement;
+      const heading = this.heading();
       if (result === null || result === this.shown || heading === undefined) {
         return;
       }
       this.shown = result;
-      untracked(() => {
-        heading.scrollIntoView({ block: 'start' });
-        heading.focus();
-      });
+      untracked(() => heading.focus());
     });
   }
 }
