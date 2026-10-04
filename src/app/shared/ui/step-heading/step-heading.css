@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  flex: none;
+  min-width: 0;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.step__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+  border-radius: 50%;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.step__text {
+  min-width: 0;
+}
+
+.step__title {
+  /* Same height as the badge, so a one-line title centres on it. */
+  display: flex;
+  align-items: center;
+  min-height: 2rem;
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: var(--leading-tight);
+  color: var(--color-text);
+  /* Room for the card edge and padding above, when scrolled into view. */
+  scroll-margin-top: var(--space-7);
+}
+
+/* Focused by script only (tabindex=-1); not a control, so no ring. */
+.step__title:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.step__lead {
+  margin: var(--space-1) 0 0;
+  max-width: 72ch;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}

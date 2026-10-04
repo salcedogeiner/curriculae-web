@@ -1,0 +1,88 @@
+:host {
+  display: contents;
+}
+
+/* A full-height sheet on the left edge. The dialog scrolls inside itself, so
+   a long history never moves the page behind it. */
+.drawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: min(var(--drawer-width), 100vw - var(--space-6));
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: none;
+  border-right: 1px solid var(--color-border);
+  box-shadow: var(--shadow-2);
+  transform: translateX(-100%);
+  /* overlay + display keep the sheet visible while it slides out; the global
+     reduced-motion rule collapses all of it to an instant switch. */
+  transition:
+    transform var(--motion-normal) ease,
+    overlay var(--motion-normal) allow-discrete,
+    display var(--motion-normal) allow-discrete;
+}
+
+.drawer[open] {
+  transform: none;
+}
+
+@starting-style {
+  .drawer[open] {
+    transform: translateX(-100%);
+  }
+}
+
+.drawer::backdrop {
+  background: var(--color-backdrop);
+}
+
+.drawer__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-height: 100%;
+  padding: var(--space-5) var(--space-4) var(--space-6);
+}
+
+.drawer__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.drawer__head > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.drawer__title {
+  margin: 0;
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
+}
+
+.drawer__lead {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.drawer__back {
+  flex: none;
+}
+
+@media print {
+  .drawer {
+    display: none;
+  }
+}

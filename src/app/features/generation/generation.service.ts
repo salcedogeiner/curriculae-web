@@ -215,6 +215,21 @@ export class GenerationService {
     return true;
   }
 
+  /**
+   * Clears the result area for a new vacancy ("Crear nuevo espacio"). Refused
+   * while a generation runs: the user cancels it first, explicitly.
+   */
+  reset(): boolean {
+    if (this.busy()) {
+      return false;
+    }
+    this._result.set(null);
+    this._issue.set(null);
+    this._draft.set('');
+    this._phase.set('idle');
+    return true;
+  }
+
   dismissIssue(): void {
     this._issue.set(null);
   }

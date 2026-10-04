@@ -148,9 +148,12 @@ src/
       generation/            orchestrator service, the right-column form, the
                              result section
       history/               desktop: workspace folders and past generations
+      launcher/              desktop: the start screen shown before the home page
+                             and the same content as a slide-in <dialog> from
+                             the header menu (new space, folder, history)
     pages/
       home/                  cv-home.* — composition only: CV left, generation
-                             form right, result and history below
+                             form right, result below
 angular.json  package.json  tsconfig*.json  .prettierrc  .editorconfig
 ```
 

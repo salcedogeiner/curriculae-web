@@ -1,0 +1,27 @@
+<dialog
+  #dialog
+  class="drawer"
+  aria-labelledby="launcher-drawer-title"
+  aria-describedby="launcher-drawer-lead"
+  (close)="onClose()"
+  (click)="onClick($event)"
+>
+  <div class="drawer__inner">
+    <header class="drawer__head">
+      <div>
+        <h2 class="drawer__title" id="launcher-drawer-title">
+          {{ i18n.t('launcher.drawerTitle') }}
+        </h2>
+        <p class="drawer__lead" id="launcher-drawer-lead">{{ i18n.t('launcher.drawerLead') }}</p>
+      </div>
+      <button type="button" class="btn drawer__back" (click)="dismiss()">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+        {{ i18n.t('launcher.back') }}
+      </button>
+    </header>
+
+    <app-launcher-panel (leave)="dismiss()" />
+  </div>
+</dialog>

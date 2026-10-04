@@ -103,7 +103,7 @@ describe('CvHome', () => {
     expect(right.querySelector('#vacancy-step-title')?.tagName).toBe('H2');
   });
 
-  it('el resultado y el historial van después de los dos pasos', async () => {
+  it('el resultado va después de los dos pasos; el historial vive en el lanzador', async () => {
     const fixture = TestBed.createComponent(CvHome);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
@@ -111,9 +111,9 @@ describe('CvHome', () => {
     const steps = compiled.querySelector('.home__steps')!;
     const result = compiled.querySelector('app-generation-result')!;
     expect(steps.compareDocumentPosition(result) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    // No result yet, and no workspace in the browser: both render nothing.
+    // No result yet: it renders nothing.
     expect(result.textContent?.trim()).toBe('');
-    expect(compiled.querySelector('app-generation-history')?.textContent?.trim()).toBe('');
+    expect(compiled.querySelector('app-generation-history')).toBeNull();
   });
 
   it('no muestra la vista previa cuando todavía no hay archivo', async () => {

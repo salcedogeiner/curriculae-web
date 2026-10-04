@@ -1,0 +1,13 @@
+<div class="start">
+  <header class="start__head">
+    <h1 class="start__title">
+      <!-- Decorative: the heading text already names the app. -->
+      <img class="start__logo" src="icon-192.png" alt="" width="64" height="64" />
+      {{ i18n.t('app.title') }}
+    </h1>
+    <p class="start__tagline">{{ i18n.t('app.tagline') }}</p>
+    <p class="start__welcome">{{ i18n.t('launcher.welcome') }}</p>
+  </header>
+
+  <app-launcher-panel [offerResume]="true" (leave)="launcher.close()" />
+</div>

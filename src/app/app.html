@@ -1,16 +1,43 @@
-<a class="skip-link" href="#main">{{ i18n.t('app.skipToContent') }}</a>
+@if (launcher.startup()) {
+  <main class="app-main app-main--start" id="main" tabindex="-1">
+    <app-start-screen />
+  </main>
+} @else {
+  <a class="skip-link" href="#main">{{ i18n.t('app.skipToContent') }}</a>
 
-<header class="app-header">
-  <div class="app-header__inner">
-    <h1 class="app-header__title">
-      <!-- Decorative: the heading text already names the app. -->
-      <img class="app-header__logo" src="icon-192.png" alt="" width="40" height="40" />
-      {{ i18n.t('app.title') }}
-    </h1>
-    <p class="app-header__tagline">{{ i18n.t('app.tagline') }}</p>
-  </div>
-</header>
+  <header class="app-header">
+    <div class="app-header__inner">
+      @if (launcher.available) {
+        <button
+          type="button"
+          class="btn btn--icon app-header__menu"
+          aria-haspopup="dialog"
+          [attr.aria-expanded]="launcher.drawerOpen()"
+          [attr.aria-label]="i18n.t('app.menuLabel')"
+          [title]="i18n.t('app.menu')"
+          (click)="launcher.openDrawer()"
+        >
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+      }
+      <div class="app-header__brand">
+        <h1 class="app-header__title">
+          <!-- Decorative: the heading text already names the app. -->
+          <img class="app-header__logo" src="icon-192.png" alt="" width="40" height="40" />
+          {{ i18n.t('app.title') }}
+        </h1>
+        <p class="app-header__tagline">{{ i18n.t('app.tagline') }}</p>
+      </div>
+    </div>
+  </header>
 
-<main class="app-main" id="main" tabindex="-1">
-  <router-outlet />
-</main>
+  <main class="app-main" id="main" tabindex="-1" #main>
+    <router-outlet />
+  </main>
+
+  @if (launcher.available) {
+    <app-launcher-drawer />
+  }
+}

@@ -7,7 +7,7 @@
 .home {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--space-5);
   flex: 1;
   width: 100%;
   max-width: var(--content-width);
@@ -15,46 +15,39 @@
 }
 
 /* Two equal columns that fill the first screen: the base CV on the left, the
-   vacancy form on the right. Result and history follow below the fold, and
-   the page scrolls to them. */
+   vacancy form on the right. The result follows below the fold. */
 .home__steps {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-6);
+  gap: var(--space-5);
   flex: 1 0 auto;
   min-height: 0;
 }
 
+/* Each step is its own surface, so the two inputs read as two separate tasks. */
 .home__column {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   min-width: 0;
   min-height: 0;
-}
-
-.home__intro {
-  flex: none;
-}
-
-.home__title {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-xl);
-  font-weight: 700;
-  line-height: var(--leading-tight);
-  color: var(--color-text);
-}
-
-.home__lead {
-  margin: 0;
-  max-width: 52ch;
-  color: var(--color-text-muted);
-  overflow-wrap: anywhere;
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
 }
 
 /* One column once the viewport cannot hold both halves. */
 @media (max-width: 60rem) {
   .home__steps {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* On paper only the result matters: the inputs are app chrome. */
+@media print {
+  .home__steps {
+    display: none;
   }
 }

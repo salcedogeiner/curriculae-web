@@ -1,25 +1,22 @@
 <div class="export" role="group" aria-labelledby="export-title">
   <p class="export__title" id="export-title">{{ i18n.t('export.title') }}</p>
   <div class="export__buttons">
-    @for (format of formats; track format.id) {
+    @for (format of formats; track format.id; let first = $first) {
       <button
         type="button"
-        class="export__button"
+        class="btn export__button"
+        [class.export__button--primary]="first"
         [disabled]="exporter.busy()"
         (click)="run(format.id)"
       >
         {{ format.label }}
       </button>
     }
-    <button type="button" class="export__button" (click)="copy()">
+    <button type="button" class="btn export__button" (click)="copy()">
       {{ i18n.t('export.copy') }}
     </button>
     @if (workspace.available && source().folderId; as folderId) {
-      <button
-        type="button"
-        class="export__button export__button--quiet"
-        (click)="openFolder(folderId)"
-      >
+      <button type="button" class="btn btn--ghost export__button" (click)="openFolder(folderId)">
         {{ i18n.t('workspace.openRoot') }}
       </button>
     }

@@ -1,49 +1,104 @@
 @if (workspace.available) {
   <div class="history">
-    <section class="history__workspace" aria-labelledby="workspace-title">
-      <h2 class="history__title" id="workspace-title">{{ i18n.t('workspace.title') }}</h2>
-      <p class="history__lead">{{ i18n.t('workspace.lead') }}</p>
+    <section class="card" aria-labelledby="workspace-title">
+      <header class="card__head">
+        <svg class="icon card__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        </svg>
+        <div>
+          <h2 class="card__title" id="workspace-title">{{ i18n.t('workspace.title') }}</h2>
+          <p class="card__lead">{{ i18n.t('workspace.lead') }}</p>
+        </div>
+      </header>
+
+      @if (workspace.info(); as info) {
+        <div class="root">
+          <p class="root__label" id="workspace-location">{{ i18n.t('workspace.location') }}</p>
+          <code class="root__path" aria-describedby="workspace-location">
+            @for (segment of pathSegments(info.root); track $index) {
+              <span>{{ segment }}</span
+              ><wbr />
+            }
+          </code>
+        </div>
+      }
+
+      <div class="card__actions">
+        <button type="button" class="btn" (click)="workspace.chooseRoot()">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+          </svg>
+          {{ i18n.t('workspace.change') }}
+        </button>
+        <button type="button" class="btn btn--ghost" (click)="workspace.open({ kind: 'root' })">
+          {{ i18n.t('workspace.openRoot') }}
+        </button>
+      </div>
+
       @if (workspace.info(); as info) {
         <dl class="paths">
           <div class="paths__row">
             <dt>{{ i18n.t('workspace.cvs') }}</dt>
-            <dd>
-              <code>{{ info.cvDir }}</code>
+            <dd class="paths__path">
+              <code [title]="info.cvDir">{{ folderName(info.cvDir) }}</code>
             </dd>
             <dd>
-              <button type="button" class="link" (click)="workspace.open({ kind: 'cvs' })">
+              <button
+                type="button"
+                class="btn btn--ghost"
+                [attr.aria-label]="i18n.t('workspace.openLabel', { name: i18n.t('workspace.cvs') })"
+                (click)="workspace.open({ kind: 'cvs' })"
+              >
                 {{ i18n.t('workspace.open') }}
               </button>
             </dd>
           </div>
           <div class="paths__row">
             <dt>{{ i18n.t('workspace.offers') }}</dt>
-            <dd>
-              <code>{{ info.offersDir }}</code>
+            <dd class="paths__path">
+              <code [title]="info.offersDir">{{ folderName(info.offersDir) }}</code>
             </dd>
             <dd>
-              <button type="button" class="link" (click)="workspace.open({ kind: 'offers' })">
+              <button
+                type="button"
+                class="btn btn--ghost"
+                [attr.aria-label]="
+                  i18n.t('workspace.openLabel', { name: i18n.t('workspace.offers') })
+                "
+                (click)="workspace.open({ kind: 'offers' })"
+              >
                 {{ i18n.t('workspace.open') }}
               </button>
             </dd>
           </div>
         </dl>
       }
-      <button type="button" class="link" (click)="workspace.chooseRoot()">
-        {{ i18n.t('workspace.change') }}
-      </button>
+
       @if (issueMessage(); as message) {
-        <p class="history__issue" role="alert">{{ message }}</p>
+        <p class="card__issue" role="alert">{{ message }}</p>
       }
     </section>
 
-    <section class="history__list-wrap" aria-labelledby="history-title">
-      <h2 class="history__title" id="history-title">{{ i18n.t('history.title') }}</h2>
+    <section class="card" aria-labelledby="history-title">
+      <header class="card__head">
+        <svg class="icon card__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8zM14 3v5h5M9 13h6M9 17h4"
+          />
+        </svg>
+        <h2 class="card__title" id="history-title">
+          {{ i18n.t('history.title') }}
+          @if (workspace.generations().length > 0) {
+            <span class="card__count">{{ workspace.generations().length }}</span>
+          }
+        </h2>
+      </header>
+
       @if (workspace.generations().length === 0) {
-        <p class="history__lead">{{ i18n.t('history.empty') }}</p>
+        <p class="empty">{{ i18n.t('history.empty') }}</p>
       } @else {
-        <ul class="history__list">
-          @for (item of workspace.generations(); track item.id) {
+        <ul class="list" id="history-list">
+          @for (item of visible(); track item.id) {
             <li class="item" [class.item--current]="item.id === currentId()">
               <div class="item__body">
                 <p class="item__title">{{ title(item) }}</p>
@@ -52,20 +107,23 @@
                   @if (item.modelLabel) {
                     · {{ item.modelLabel }}
                   }
-                  @if (item.id === currentId()) {
-                    · <strong>{{ i18n.t('history.current') }}</strong>
-                  }
                 </p>
+                @if (item.id === currentId()) {
+                  <p class="item__badge">{{ i18n.t('history.current') }}</p>
+                }
               </div>
               @if (item.score !== null) {
-                <span class="item__score">{{
-                  i18n.t('history.score', { score: item.score })
-                }}</span>
+                <p class="item__score" [attr.data-level]="scoreLevel(item.score)">
+                  <span class="item__score-value">{{
+                    i18n.t('history.score', { score: item.score })
+                  }}</span>
+                  <span class="item__score-label">{{ i18n.t('history.scoreLabel') }}</span>
+                </p>
               }
               <div class="item__actions">
                 <button
                   type="button"
-                  class="link"
+                  class="btn"
                   [attr.aria-label]="i18n.t('history.showLabel', { title: title(item) })"
                   (click)="show(item)"
                 >
@@ -73,7 +131,7 @@
                 </button>
                 <button
                   type="button"
-                  class="link"
+                  class="btn btn--ghost"
                   [attr.aria-label]="i18n.t('history.openFolderLabel', { title: title(item) })"
                   (click)="openFolder(item)"
                 >
@@ -83,6 +141,30 @@
             </li>
           }
         </ul>
+        @if (hiddenCount() > 0) {
+          <button
+            type="button"
+            class="btn btn--ghost list__more"
+            aria-controls="history-list"
+            [attr.aria-expanded]="expanded()"
+            (click)="expanded.set(!expanded())"
+          >
+            {{
+              expanded()
+                ? i18n.t('history.showLess')
+                : i18n.t('history.showMore', { count: hiddenCount() })
+            }}
+            <svg
+              class="icon list__more-icon"
+              [class.list__more-icon--up]="expanded()"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </button>
+        }
       }
     </section>
   </div>

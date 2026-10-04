@@ -14,19 +14,6 @@
   min-height: 0;
 }
 
-.gen__title {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-xl);
-  font-weight: 700;
-  line-height: var(--leading-tight);
-}
-
-.gen__lead {
-  margin: 0;
-  max-width: 52ch;
-  color: var(--color-text-muted);
-}
-
 /* The text area absorbs the height left over, mirroring the drop zone. */
 .gen__field {
   display: flex;

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   NonNullableFormBuilder,
@@ -10,6 +10,7 @@ import { I18n } from '../../../core/i18n/i18n';
 import type { MessageKey } from '../../../core/i18n/messages';
 import { LlmService } from '../../../core/llm/llm.service';
 import { CvImportService } from '../../cv/import/cv-import.service';
+import { StepHeading } from '../../../shared/ui/step-heading/step-heading';
 import { ModelSelector } from '../../settings/model-selector/model-selector';
 import {
   VACANCY_MAX_CHARS,
@@ -44,7 +45,7 @@ function trimmedMinLength(min: number) {
  */
 @Component({
   selector: 'app-generation-form',
-  imports: [ReactiveFormsModule, ModelSelector],
+  imports: [ReactiveFormsModule, ModelSelector, StepHeading],
   templateUrl: './generation-form.html',
   styleUrl: './generation-form.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -104,6 +105,15 @@ export class GenerationForm {
   });
 
   constructor() {
+    // The draft can also change from outside the form ("Crear nuevo espacio"
+    // clears it); without this the textarea would keep showing the old text.
+    effect(() => {
+      const text = this.vacancy.text();
+      const control = this.form.controls.vacancy;
+      if (text !== control.value) {
+        control.setValue(text, { emitEvent: false });
+      }
+    });
     this.form.controls.vacancy.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((text) => this.vacancy.setText(text));

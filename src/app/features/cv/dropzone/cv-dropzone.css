@@ -20,7 +20,6 @@
   background: var(--color-surface);
   border: 2px dashed var(--color-border-strong);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-1);
   transition:
     border-color var(--motion-normal) ease,
     background-color var(--motion-normal) ease;
@@ -31,11 +30,49 @@
   background: var(--color-accent-soft);
 }
 
-/* Solid once a file is in: the zone still invites a replacement rather than
-   reading as "done, ignore me". */
+/* Once a file is in, the preview is what the user reads: the zone shrinks to
+   a strip that still accepts a replacement (drop or click), and the summary
+   below it carries the explicit "Cargar otro archivo" button. */
+:host:has(.dropzone--loaded) {
+  flex: none;
+}
+
 .dropzone--loaded {
-  border-style: solid;
-  border-color: var(--color-border-strong);
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: 0;
+  padding: var(--space-3) var(--space-4);
+}
+
+.dropzone--loaded .dropzone__panel {
+  flex-direction: row;
+  flex: 1 1 auto;
+  gap: var(--space-3);
+}
+
+.dropzone--loaded .dropzone__icon {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.dropzone--loaded .dropzone__title {
+  font-size: var(--text-base);
+}
+
+.dropzone--loaded .dropzone__or,
+.dropzone--loaded .dropzone__action {
+  display: none;
+}
+
+/* Still the input's accessible name: hidden visually, never display:none. */
+.dropzone--loaded .dropzone__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* The label is the accessible name of the input it points at. */
@@ -176,21 +213,10 @@
   overflow-wrap: anywhere;
 }
 
-.dropzone__file-change {
+/* Shared .btn look (styles.css); only the flex behaviour is local. */
+.dropzone__file-change,
+.dropzone-error__retry {
   flex: none;
-  padding: var(--space-1) var(--space-3);
-  background: transparent;
-  color: var(--color-accent);
-  border: 1px solid var(--color-accent);
-  border-radius: var(--radius-sm);
-  font-family: inherit;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.dropzone__file-change:hover {
-  background: var(--color-accent-soft);
 }
 
 .dropzone-error {
@@ -219,21 +245,4 @@
   font-size: var(--text-sm);
   color: var(--color-text);
   overflow-wrap: anywhere;
-}
-
-.dropzone-error__retry {
-  flex: none;
-  padding: var(--space-1) var(--space-3);
-  background: transparent;
-  color: var(--color-accent);
-  border: 1px solid var(--color-accent);
-  border-radius: var(--radius-sm);
-  font-family: inherit;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.dropzone-error__retry:hover {
-  background: var(--color-accent-soft);
 }

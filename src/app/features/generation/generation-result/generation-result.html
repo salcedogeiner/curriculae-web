@@ -6,10 +6,12 @@
 } @else if (generation.result(); as result) {
   <section class="result" aria-labelledby="result-title">
     <header class="result__head">
-      <h2 class="result__title" id="result-title" tabindex="-1" #heading>
-        {{ i18n.t('result.title') }}
-      </h2>
-      <p class="result__meta">{{ meta() }}{{ baseCvLabel() }}</p>
+      <app-step-heading
+        [step]="3"
+        [title]="i18n.t('result.title')"
+        [lead]="meta() + baseCvLabel()"
+        headingId="result-title"
+      />
     </header>
 
     <div class="result__grid">

@@ -1,0 +1,45 @@
+<div class="panel">
+  <ul class="actions">
+    <li>
+      <button
+        type="button"
+        class="action action--primary"
+        aria-describedby="launcher-new-hint"
+        [attr.aria-disabled]="!launcher.canStartNew()"
+        (click)="startNew()"
+      >
+        <svg class="icon action__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        <span class="action__title">{{ i18n.t('launcher.newSpace') }}</span>
+        <span class="action__hint" id="launcher-new-hint">
+          {{
+            launcher.canStartNew()
+              ? i18n.t('launcher.newSpaceHint')
+              : i18n.t('launcher.newSpaceBusy')
+          }}
+        </span>
+      </button>
+    </li>
+    @if (offerResume() && launcher.canResume()) {
+      <li>
+        <button
+          type="button"
+          class="action"
+          aria-describedby="launcher-resume-hint"
+          (click)="leave.emit()"
+        >
+          <svg class="icon action__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+          <span class="action__title">{{ i18n.t('launcher.resume') }}</span>
+          <span class="action__hint" id="launcher-resume-hint">
+            {{ i18n.t('launcher.resumeHint') }}
+          </span>
+        </button>
+      </li>
+    }
+  </ul>
+
+  <app-generation-history (picked)="leave.emit()" />
+</div>

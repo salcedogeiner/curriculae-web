@@ -8,9 +8,23 @@ export const es = {
     title: 'Curriculae',
     tagline: 'Adapta tu hoja de vida a una vacante obteniendo una versión adaptada y analizada.',
     skipToContent: 'Saltar al contenido principal',
+    stepLabel: 'Paso {n}: ',
+    menu: 'Inicio',
+    menuLabel: 'Abrir el inicio: espacio nuevo, carpeta de trabajo e historial',
+  },
+  launcher: {
+    welcome: 'Elige cómo quieres empezar.',
+    newSpace: 'Crear nuevo espacio',
+    newSpaceHint: 'Empieza con una vacante nueva. Tu hoja de vida base se conserva.',
+    newSpaceBusy: 'Espera a que termine la generación en curso o cancélala.',
+    resume: 'Continuar donde lo dejaste',
+    resumeHint: 'Vuelve a la vacante y la versión con las que estabas trabajando.',
+    drawerTitle: 'Inicio',
+    drawerLead: 'Empieza con otra vacante o retoma una versión anterior.',
+    back: 'Volver a mi espacio de trabajo',
   },
   cv: {
-    stepTitle: '1 · Tu hoja de vida',
+    stepTitle: 'Tu hoja de vida',
     stepLead:
       'Suelta aquí tu archivo o selecciónalo. Se procesa en tu equipo: el texto nunca se envía a ningún servidor.',
     preview: {
@@ -45,7 +59,7 @@ export const es = {
     },
   },
   vacancy: {
-    stepTitle: '2 · La oferta de empleo',
+    stepTitle: 'La oferta de empleo',
     stepLead:
       'Pega el texto completo de la oferta, elige el modelo y genera una versión de tu hoja de vida adaptada a ella.',
     label: 'Texto de la oferta',
@@ -131,7 +145,7 @@ export const es = {
     dismiss: 'Cerrar aviso',
   },
   result: {
-    title: '3 · Resultado',
+    title: 'Resultado',
     meta: 'Generada el {date} con {model}',
     baseCv: 'A partir de {fileName}',
     vacancy: 'Ver el texto de la oferta',
@@ -190,14 +204,19 @@ export const es = {
     openFolder: 'Abrir carpeta',
     openFolderLabel: 'Abrir la carpeta de {title}',
     score: '{score} %',
+    scoreLabel: 'compatibilidad',
+    showMore: 'Ver {count} más',
+    showLess: 'Ver menos',
     current: 'En pantalla',
   },
   workspace: {
     title: 'Carpeta de trabajo',
     lead: 'Tus hojas de vida y cada versión generada se guardan en esta carpeta de tu equipo.',
+    location: 'Ubicación actual',
     cvs: 'Hojas de vida cargadas',
     offers: 'Versiones por oferta',
     open: 'Abrir',
+    openLabel: 'Abrir la carpeta {name}',
     openRoot: 'Abrir carpeta',
     change: 'Cambiar ubicación',
     errors: {
